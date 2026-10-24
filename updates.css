@@ -1,0 +1,61 @@
+/* V2: a calm, focused progression path and single-word learning experience. */
+.page-back{display:flex;align-items:center;gap:16px;margin:1px 0 11px;font-size:12px}
+.page-back[hidden]{display:none}
+.page-back .outline-button{padding:7px 12px;font-size:12px}
+.focus-mode .topbar .nav,.focus-mode .audio-bar,.focus-mode .site-footer{display:none}
+.focus-mode .topbar{min-height:67px}
+.focus-mode .page-heading{text-align:center}
+.path-summary{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:12px;margin:0 0 18px}
+.path-stat{border:1px solid #dbe9e4;border-radius:17px;background:#fff;padding:18px 20px;min-height:126px;box-shadow:0 6px 18px rgba(42,85,79,.025)}
+.path-stat small{color:#638179;display:block;margin-bottom:7px;font-weight:650}
+.path-stat strong{font-size:25px;font-weight:800;color:#246a64;line-height:1.25}
+.path-stat p{color:#759089;font-size:12px;margin:4px 0 0}
+.progress-track{height:8px;border-radius:50px;background:#e5f2ed;margin:12px 0 0;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#14998c,#74c7ae);border-radius:50px;min-width:0;transition:width .3s}
+.path-layout{display:grid;grid-template-columns:1fr 1.1fr;align-items:start;gap:16px}
+.path-layout .surface-card{min-height:340px}
+.path-eyebrow{display:inline-flex;gap:8px;align-items:center;color:#238275;font-size:12px;font-weight:800;margin-bottom:13px;letter-spacing:.02em}
+.path-layout h2{font-size:23px;margin-bottom:12px}
+.path-layout p{font-size:14px;color:#536b69;line-height:1.85}
+.path-steps{padding-left:23px;font-size:14px;color:#4c6862;line-height:2.15}
+.path-word-list{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.path-word{display:flex;align-items:center;gap:5px;background:#f6fbf9;border:1px solid #e1eee7;border-radius:12px;padding:10px 9px;min-width:0}
+.path-word>button:first-child{border:0;background:none;text-align:left;flex:1;min-width:0;color:#194c4b;cursor:pointer}
+.path-word strong{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.path-word small{display:block;color:#758a84;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.path-word .play-button{width:29px;height:29px;min-width:29px;font-size:11px}
+.path-bottom{display:flex;gap:11px;justify-content:space-between;align-items:center;margin:18px 0 15px;flex-wrap:wrap}
+.path-bottom .path-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.path-bottom .muted{font-size:12px}
+.path-quiz{margin-top:16px;padding:22px 26px}
+.path-quiz h2{font-size:22px}
+.path-quiz>p{font-size:13px;color:#678079}
+.path-mini-quiz{padding:14px 0;border-top:1px solid #e3eee9}
+.path-mini-quiz>p{font-size:16px;color:#214e4b;margin-bottom:10px;display:flex;gap:10px;align-items:center}
+.path-mini-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.path-mini-options .option-button{text-align:left;font-size:13px;line-height:1.5}
+.path-mini-feedback{margin-top:10px;padding:12px;border-radius:12px;background:#e9f8ef;color:#2b6554;font-size:12px;line-height:1.85}
+.path-mini-feedback div{margin-top:5px}
+.word-mode-row{display:flex;align-items:center;gap:14px;margin:13px 0;flex-wrap:wrap}
+.word-mode-row .muted{font-size:12px}
+.word-card .word-usage .play-button{margin-left:5px;width:30px;height:30px;min-width:30px}
+.focus-nav{max-width:700px;margin:0 auto 13px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.focus-nav .outline-button{padding:8px 14px;font-size:12px}
+.focus-nav .muted{font-size:13px;text-align:center}
+.focus-card{max-width:700px;margin:auto;padding:43px 34px 36px;border-radius:30px;background:linear-gradient(145deg,#edf9f3 0%,#ffffff 58%,#f4fafb 100%);border:1px solid #d6e8e4;min-height:355px;box-shadow:0 17px 50px rgba(32,90,82,.07);text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.focus-card .focus-label{color:#318c80;letter-spacing:.1em;font-size:11px;font-weight:800;text-transform:uppercase}
+.focus-card .focus-word{font-size:clamp(35px,6.2vw,66px);font-weight:850;line-height:1.2;letter-spacing:-.025em;margin:13px 0 10px;word-break:break-word;color:#174c49}
+.focus-card .play-button{width:45px;height:45px;min-width:45px}
+.focus-card .split-tiles{display:flex;justify-content:center;flex-wrap:wrap;gap:5px;margin:12px 0 8px}
+.focus-card .focus-reveal{margin-top:23px}
+.focus-card .focus-answer{width:100%;margin:19px 0 0;padding:19px 20px;border-radius:18px;border:1px solid #dcebe5;background:#fff;text-align:left}
+.focus-card .focus-answer h3{margin:0 0 7px;color:#1c655e;font-size:21px}
+.focus-card .focus-answer p{font-size:13px;color:#4d6962;margin:5px 0;line-height:1.75}
+.focus-card .focus-answer strong{color:#184d47}
+.focus-card .focus-actions{margin-top:16px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.focus-exit{margin-top:19px}
+.focus-card .focus-one-syllable{font-size:11px;color:#80958c;margin:0}
+.lesson-pagination{margin:24px 0 0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.lesson-pagination span{font-size:12px;color:#6a837b}
+@media(max-width:800px){.path-layout{grid-template-columns:1fr}.path-layout .surface-card{min-height:auto}.path-summary{grid-template-columns:repeat(3,1fr)}.path-stat{padding:12px;min-height:106px}.path-stat strong{font-size:20px}}
+@media(max-width:580px){.path-summary{grid-template-columns:1fr 1fr}.path-stat:first-child{grid-column:span 2}.path-stat{min-height:95px}.path-word-list{grid-template-columns:1fr 1fr}.path-word{padding:7px 6px}.path-word small{font-size:10px}.path-word strong{font-size:13px}.path-mini-options{grid-template-columns:1fr}.page-back{margin-top:8px}.focus-card{padding:26px 17px;min-height:320px}.focus-nav .outline-button{font-size:11px;padding:7px}.lesson-pagination .outline-button,.lesson-pagination .primary-button{font-size:11px;padding:9px}}

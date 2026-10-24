@@ -77,6 +77,82 @@ const LESSONS = [
   }
 ];
 
+// 從初學者的第一課一路銜接到多益基本句型，每課獨立可複習。
+LESSONS.push(
+  {id:'continuous',title:'現在進行式',level:'初級',subtitle:'正在做某件事：am / is / are + V-ing。',
+    paragraphs:['現在進行式描述「此刻正在進行」的動作。be 動詞要配合主詞，後面的動詞改成 ing。','現在進行式和現在簡單式不同：She works. 是平常的習慣；She is working. 是她正在工作。'],
+    rules:[['I + am + V-ing','I am reading.'],['He / She / It + is + V-ing','She is working.'],['You / We / They + are + V-ing','They are preparing.']],
+    examples:[['The manager is speaking.','經理正在說話。'],['We are preparing the documents.','我們正在準備文件。']],
+    vocab:['prepare','work','speak','document'],tip:'選項有 working 時，確認空格前是否有 am／is／are。',
+    notes:'現在進行式＝主詞 + am/is/are + V-ing。\nI am reading.／She is working.／They are preparing.\n\n現在簡單式：She works.（習慣）\n現在進行式：She is working.（正在發生）'},
+  {id:'future',title:'未來式：will 與 be going to',level:'初級',subtitle:'會發生、打算做的事。',
+    paragraphs:['未來式常用 will + 動詞原形，也能使用 be going to + 動詞原形來描述已有的計畫。','will 後面不加 -s，也不加 -ed。例如 He will work.'],
+    rules:[['will + 原形動詞','will send / will arrive'],['be going to + 原形','is going to visit'],['未來時間線索','tomorrow、next week、soon']],
+    examples:[['She will call tomorrow.','她明天會打電話。'],['We are going to meet next week.','我們下週打算見面。']],
+    vocab:['tomorrow','call','meet','schedule'],tip:'看到 will 時先找原形動詞，別選 works 或 worked。',
+    notes:'will + V 原形：I will work.（我將工作。）\nbe going to + V 原形：She is going to study.（她打算念書。）\n\n線索：tomorrow、next week、soon。'},
+  {id:'perfect',title:'現在完成式：have / has + p.p.',level:'中級入門',subtitle:'做過、已完成，或從過去持續到現在。',
+    paragraphs:['現在完成式使用 have／has 加上過去分詞（p.p.）。第三人稱單數要用 has。','已完成的工作經常搭配 already；經驗則常搭配 ever、never。'],
+    rules:[['I / You / We / They + have + p.p.','We have finished.'],['He / She / It + has + p.p.','She has submitted.'],['常見時間副詞','already、yet、ever、since、for']],
+    examples:[['The manager has approved the report.','經理已核准報告。'],['We have received your email.','我們已收到你的電子郵件。']],
+    vocab:['approve','receive','already','report'],tip:'has／have 後面通常選過去分詞，注意不規則動詞。',
+    notes:'現在完成式＝have/has + p.p.（過去分詞）。\nI have finished.／She has finished.\n\nalready 已經；yet 還沒／已經；since 自從；for 持續多久。'},
+  {id:'articles',title:'冠詞：a、an、the',level:'初級',subtitle:'看名詞前面為什麼有 a、an、the。',
+    paragraphs:['單數可數名詞通常不能直接孤零零地出現，前面常需 a、an、the 或其他限定詞。','a 與 an 要根據發音而不是單純拼字決定；the 常表示已知或特定的對象。'],
+    rules:[['a + 子音音素','a report / a university'],['an + 母音音素','an employee / an hour'],['the + 特定對象','the meeting we discussed']],
+    examples:[['She is an employee.','她是一名員工。'],['Please read the report.','請閱讀那份報告。']],
+    vocab:['employee','report','meeting','office'],tip:'a／an 是看緊跟其後的發音；「an university」是錯的。',
+    notes:'a：子音音素前 → a report。\nan：母音音素前 → an employee。\nthe：特定的人或物 → the report。\n\n注意發音：an hour、a university。'},
+  {id:'wordforms',title:'形容詞、副詞與詞性變化',level:'中級入門',subtitle:'多益 Part 5 最常見的詞性判斷。',
+    paragraphs:['同一字根可以變成不同詞性。空格前後的文法位置，往往比中文翻譯更有用。','形容詞通常修飾名詞；副詞常修飾動詞，部分副詞以 -ly 結尾。'],
+    rules:[['形容詞 + 名詞','careful review'],['動詞 + 副詞','work carefully'],['常見字尾','-tion 名詞；-ive 形容詞；-ly 副詞']],
+    examples:[['She is a careful worker.','她是一位仔細的工作者。'],['She works carefully.','她工作得很仔細。']],
+    vocab:['carefully','important','effective','effectively'],tip:'名詞前可能需要形容詞；修飾動詞時可能需要副詞。',
+    notes:'adj. 形容詞：修飾名詞，a careful worker。\nadv. 副詞：修飾動詞，work carefully。\n\n常見詞族：effect（n.）→ effective（adj.）→ effectively（adv.）。'},
+  {id:'comparatives',title:'比較級與最高級',level:'中級入門',subtitle:'比較兩者與多者的差異。',
+    paragraphs:['比較兩個人或物時，常使用比較級 + than。比較三者以上的最高程度，常使用 the + 最高級。','部分形容詞加 -er／-est；較長的形容詞常用 more／most。'],
+    rules:[['比較級 + than','faster than'],['the + 最高級','the fastest'],['長形容詞','more expensive / most expensive']],
+    examples:[['This computer is faster than that one.','這部電腦比那部快。'],['This is the most expensive product.','這是最昂貴的產品。']],
+    vocab:['expensive','fast','product','computer'],tip:'看到 than，先考慮比較級；看到 the 和範圍，留意最高級。',
+    notes:'比較兩者：adj.-er / more adj. + than。\n比較多者：the adj.-est / the most adj.。\n\nfast → faster → fastest。\nexpensive → more expensive → most expensive。'},
+  {id:'prepositions',title:'時間與地點介系詞',level:'初級',subtitle:'in、on、at、by、until 有什麼不同？',
+    paragraphs:['介系詞常和時間、地點一起出現，多益填空題很常考。','先從三組記憶：in 接月份／年份；on 接日期／星期；at 接確切時間。'],
+    rules:[['in','in October；in 2026；in the office'],['on','on Monday；on October 5'],['at','at 9 a.m.；at the station'],['by / until','by Friday＝不晚於週五；until Friday＝持續到週五']],
+    examples:[['The meeting starts at nine.','會議九點開始。'],['Submit the form by Friday.','請最晚星期五提交表格。']],
+    vocab:['in','on','at','before'],tip:'by 表示期限；until 表示動作持續到某時間，不可完全互換。',
+    notes:'時間：in + 月／年；on + 星期／日期；at + 幾點。\n地點：in the office；at the station。\n\nby Friday：最晚週五。\nuntil Friday：持續到週五。'},
+  {id:'conjunctions',title:'連接詞：and、but、because、although',level:'中級入門',subtitle:'弄清楚兩個句子是什麼關係。',
+    paragraphs:['連接詞可以連接字詞或句子。考題常藉由前後語意測試原因、對比或補充。','because 表示原因；although 表示讓步；but 表示轉折。'],
+    rules:[['and','而且；並且'],['but / although','但是／雖然（句型不同）'],['because / so','因為／所以']],
+    examples:[['We stayed home because it rained.','因為下雨，我們待在家。'],['Although it rained, we went out.','雖然下雨，我們還是出門。']],
+    vocab:['because','although','however','therefore'],tip:'先抓兩句是「因果」還是「轉折」，再比較選項詞性與句型。',
+    notes:'and：並且；but：但是。\nbecause：因為，後接完整子句。\nalthough：雖然，後接完整子句。\n\n例：Although she was busy, she helped us.'},
+  {id:'passive',title:'被動語態：be + p.p.',level:'中級',subtitle:'報告被提交、貨物被寄出。',
+    paragraphs:['如果句子強調承受動作的人或物，可以使用被動語態。基本結構是 be 動詞 + 過去分詞。','時態改變時，be 也會跟著變：is delivered、was delivered、will be delivered。'],
+    rules:[['現在式被動','is / are + p.p.'],['過去式被動','was / were + p.p.'],['未來式被動','will be + p.p.']],
+    examples:[['The order was shipped yesterday.','訂單昨天已寄出。'],['The report will be reviewed tomorrow.','報告明天會被審查。']],
+    vocab:['ship','review','order','submit'],tip:'看到 be + p.p.，先判斷主詞是否「被」做某件事。',
+    notes:'被動語態＝be + p.p.。\n現在：is/are reviewed。\n過去：was/were reviewed。\n未來：will be reviewed。\n\nThe order was shipped.（訂單被寄出。）'},
+  {id:'infinitives',title:'不定詞與動名詞',level:'中級',subtitle:'to do 和 doing 該怎麼選？',
+    paragraphs:['有些動詞後面常接 to + 原形動詞，另一些後面常接 V-ing。這是多益常見固定搭配。','want to、plan to、decide to；avoid doing、enjoy doing、finish doing，先記熟高頻搭配。'],
+    rules:[['want / decide / plan + to V','plan to attend'],['enjoy / avoid / finish + V-ing','avoid making mistakes'],['介系詞後常接 V-ing','interested in learning']],
+    examples:[['We plan to attend the meeting.','我們計畫出席會議。'],['Please avoid making errors.','請避免犯錯。']],
+    vocab:['plan','attend','avoid','finish'],tip:'先找空格前的動詞／介系詞；固定搭配比直接翻譯更可靠。',
+    notes:'to + V：want to／plan to／decide to。\nV-ing：avoid／enjoy／finish + V-ing。\n介系詞 + V-ing：interested in learning。'},
+  {id:'modals',title:'情態助動詞：can、must、should',level:'中級入門',subtitle:'表示能力、必要與建議。',
+    paragraphs:['can、could、may、must、should、might 等情態助動詞後面通常接動詞原形。','must 表示必須，should 表示應該，may／might 表示可能，意思不一樣。'],
+    rules:[['can / could + V','can help'],['must / should + V','must submit / should check'],['may / might + V','may arrive']],
+    examples:[['Employees must wear ID cards.','員工必須配戴識別證。'],['You should check the schedule.','你應該確認時程。']],
+    vocab:['must','should','check','schedule'],tip:'看到 can、must、should，後面不加 -s／-ed。',
+    notes:'情態助動詞 + V 原形。\ncan 能夠；must 必須；should 應該；may 可能。\n\nShe must work.（不可寫 must works）'},
+  {id:'relative',title:'關係代名詞：who、which、that',level:'中級',subtitle:'把資訊加到名詞後面，讀懂多益長句。',
+    paragraphs:['關係代名詞用來補充前面的人或物的資訊。who 常指人；which 常指物；that 在限制性關係子句中可指人或物。','閱讀時先抓主句，再把 who／which 後面的補充說明放進來理解。'],
+    rules:[['who','The manager who called…'],['which','The report which arrived…'],['that','The product that we ordered…']],
+    examples:[['The employee who called is new.','打電話的那位員工是新進人員。'],['The product that we ordered arrived.','我們訂購的產品已送達。']],
+    vocab:['employee','product','order','arrive'],tip:'遇到長句時，先找主要動詞，關係子句通常用來修飾前方名詞。',
+    notes:'who：常指人；which：常指物；that：可指人／物。\n\nThe employee who called is new.\n先找主句 The employee is new.，再看補充資訊 who called。'}
+);
+
 const QUESTIONS = [
   {id:'g1',cat:'基礎文法',part:'入門',stem:'I _____ an employee.',translation:'我是一名員工。',options:['am','is','are','be'],correct:0,hint:'先看主詞 I。',why:'主詞 I 在現在式搭配 am。',reasons:['am 專門與 I 搭配。','is 用於第三人稱單數，不與 I 搭配。','are 用於 You／We／They 等主詞。','be 是原形，不符合這裡的現在式肯定句。']},
   {id:'g2',cat:'基礎文法',part:'入門',stem:'The managers _____ in the office.',translation:'經理們在辦公室。',options:['am','is','are','be'],correct:2,hint:'managers 是複數。',why:'The managers 是複數主詞，現在式應使用 are。',reasons:['am 只與 I 搭配。','is 與單數主詞搭配。','are 與複數主詞搭配。','be 不能直接代替這裡的現在式 are。']},
@@ -96,19 +172,49 @@ const QUESTIONS = [
   {id:'r2',cat:'短文閱讀',part:'Part 7 模擬',context:'NOTICE\nThe office will be closed on Monday, November 9, for maintenance. Employees can work from home. Normal operations will resume on Tuesday.',stem:'When will normal operations resume?',translation:'辦公室將於 11 月 9 日星期一維修關閉；員工可在家工作，星期二恢復正常營運。',options:['Sunday','Monday','Tuesday','Friday'],correct:2,hint:'找到 Normal operations will resume ... 這一句。',why:'文章最後一句清楚指出 on Tuesday。',reasons:['Sunday 未在公告中作為恢復日期。','Monday 是關閉維修的日期。','Tuesday 是正常營運恢復的日期。','Friday 未出現在公告的恢復安排。']}
 ];
 
-const state = {page:'home',lesson:LESSONS[0].id,wordLimit:12,practiceCategory:'全部',practiceIndex:0,answers:{}};
+const state = {page:'home',lesson:LESSONS[0].id,wordLimit:12,practiceCategory:'全部',practiceIndex:0,answers:{},unit:1,completedUnits:new Set(),focusWords:[],focusIndex:0,focusRevealed:false,focusOrigin:'words',unitQuizAnswers:{},navDepth:0};
 const vocab = Array.isArray(window.TOEIC_VOCAB) ? window.TOEIC_VOCAB : [];
+const WORDS_PER_UNIT=10;
+const priorityWords=['i','you','he','she','it','we','they','be','have','do','work','office','company','employee','manager','student','teacher','job','team','meeting','report','email','read','write','study','learn','help','start','finish','need','apply','application','hire','submit'];
+const priorityIndex=new Map(priorityWords.map((word,i)=>[word,i]));
+const sourcesOrder={'基礎增補':0,'基礎字庫':1,'原書':2,'補充':3};
+const learningVocabulary=[...vocab].sort((a,b)=>{
+  const ia=priorityIndex.get(a.word.toLowerCase())??9999,ib=priorityIndex.get(b.word.toLowerCase())??9999;
+  if(ia!==ib)return ia-ib;
+  return (sourcesOrder[a.source]??9)-(sourcesOrder[b.source]??9);
+});
 const $ = sel => document.querySelector(sel);
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const compact = value => !value || value==='—' ? '無常見直接對應／尚未補充' : value;
 const voiceButton = (phrase, label='🔊') => `<button class="play-button" type="button" data-say="${escapeHTML(phrase)}" aria-label="播放：${escapeHTML(phrase)}">${label}</button>`;
 
-function selectPage(page) {
-  if (!['home','grammar','words','practice','notes'].includes(page)) return;
+const PAGES=['home','path','grammar','words','focus','practice','notes'];
+function showPage(page) {
+  if (!PAGES.includes(page)) return;
   state.page=page;
+  document.body.classList.toggle('focus-mode',page==='focus');
   document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id==='page-'+page));
   document.querySelectorAll('.nav-button').forEach(btn=>{const on=btn.dataset.pageTarget===page;btn.classList.toggle('active',on);btn.setAttribute('aria-current',on?'page':'false')});
+  $('#page-back').hidden=page==='home';
+  $('#page-back-label').textContent={path:'循序學習',grammar:'文法教室',words:'單字小卡',focus:'單字專注模式',practice:'練習與詳解',notes:'手寫筆記'}[page]||'';
   window.scrollTo({top:0,behavior:'instant'});
+}
+function selectPage(page,{record=true}={}) {
+  if (!PAGES.includes(page)) return;
+  if(record && state.page!==page) {
+    window.history.pushState({toeicPage:page,toeicDepth:state.navDepth+1},'',`#${page}`);
+    state.navDepth++;
+  }
+  showPage(page);
+}
+window.addEventListener('popstate',e=>{
+  const page=e.state?.toeicPage||window.location.hash.slice(1)||'home';
+  state.navDepth=Math.max(0,Number(e.state?.toeicDepth)||0);
+  showPage(PAGES.includes(page)?page:'home');
+});
+function goBack() {
+  if(state.navDepth>0){window.history.back();return;}
+  selectPage('home');
 }
 
 let lastAudio='',audioSeq=0;
@@ -136,6 +242,7 @@ function speak(phrase) {
 function renderLessons() {
   $('#lesson-list').innerHTML=LESSONS.map((lesson,i)=>`<button class="lesson-nav ${lesson.id===state.lesson?'active':''}" type="button" data-lesson="${lesson.id}"><span class="lesson-num">${String(i+1).padStart(2,'0')}</span><span class="lesson-name">${escapeHTML(lesson.title)}</span></button>`).join('');
   const lesson=LESSONS.find(x=>x.id===state.lesson) || LESSONS[0];
+  const lessonIndex=LESSONS.indexOf(lesson);
   $('#lesson-detail').innerHTML=`
     <div class="lesson-title-row"><div><span class="pill">${escapeHTML(lesson.level)}</span><h2>${escapeHTML(lesson.title)}</h2><p class="lesson-subtitle">${escapeHTML(lesson.subtitle)}</p></div><span style="font-size:25px" aria-hidden="true">📖</span></div>
     <h3 class="section-mini">先理解這個觀念</h3>
@@ -145,7 +252,8 @@ function renderLessons() {
     <h3 class="section-mini">搭配單字</h3><div class="word-tags">${lesson.vocab.map(w=>`<button class="tag green" type="button" data-word-jump="${escapeHTML(w)}">${escapeHTML(w)} ↗</button>`).join('')}</div>
     <div class="tip-box">🔎 <strong>多益解題提示：</strong>${escapeHTML(lesson.tip)}</div>
     <h3 class="section-mini">📝 這堂課的手寫筆記</h3><div class="note-snippet">${escapeHTML(lesson.notes)}</div>
-    <div class="lesson-actions"><button class="primary-button" type="button" data-page-target="practice">做幾題試試看 →</button><button class="outline-button" type="button" data-notes-jump="${lesson.id}">查看筆記本 →</button></div>`;
+    <div class="lesson-actions"><button class="primary-button" type="button" data-page-target="practice">做幾題試試看 →</button><button class="outline-button" type="button" data-notes-jump="${lesson.id}">查看筆記本 →</button></div>
+    <div class="lesson-pagination"><button class="outline-button" type="button" data-lesson-step="prev" ${lessonIndex===0?'disabled':''}>← 上一堂</button><span>第 ${lessonIndex+1} / ${LESSONS.length} 堂</span><button class="primary-button" type="button" data-lesson-step="next" ${lessonIndex===LESSONS.length-1?'disabled':''}>下一堂文法 →</button></div>`;
 }
 
 function vocabMatches() {
@@ -153,22 +261,19 @@ function vocabMatches() {
   const category=$('#word-category').value;
   const source=$('#word-source').value;
   const matches=vocab.filter(w=>(!category||w.category===category)&&(!source||w.source===source)&&(!query||[w.word,w.meaning,w.usage,w.family,w.synonyms,w.confusing].some(x=>String(x||'').toLocaleLowerCase().includes(query))));
-  if (!query && !category && !source) {
-    const firstWords=['work','office','company','employee','manager','student','teacher','job','team','meeting','report','email','read','write','study','learn','help','start','finish','need','apply','application','hire','submit'];
-    const order=new Map(firstWords.map((name,i)=>[name,i]));
-    return matches.sort((a,b)=>(order.get(a.word.toLowerCase())??10000)-(order.get(b.word.toLowerCase())??10000));
-  }
+  if (!query && !category && !source) return learningVocabulary;
   return matches;
 }
 function renderVocabCard(w,index) {
-  const details=[['常見搭配',w.usage],['同義／近義',w.synonyms],['反義詞',w.antonyms],['容易混淆',w.confusing],['詞族',w.family],['學習提醒',w.note]];
+  const details=[['常見搭配',w.usage],['同義／近義',w.synonyms],['反義詞',w.antonyms],['容易混淆',w.confusing],['詞族',w.family],['學習提醒',w.note]].filter(d=>d[1]&&d[1]!=='—');
   const forms=['原形','第三人稱單數','過去式','過去分詞','V-ing','未來式'];
   return `<article class="word-card"><div class="word-head"><div><h3>${escapeHTML(w.word)}</h3><div class="meaning">${escapeHTML(w.meaning)}</div></div>${voiceButton(w.word)}</div>
     <div class="word-tags"><span class="tag green">${escapeHTML(w.pos)}</span><span class="tag">${escapeHTML(w.category)}</span><span class="tag orange">${escapeHTML(w.source)}</span></div>
-    ${w.split?`<div class="split-tiles" aria-label="拼字拆分">${w.split.split('/').map(s=>`<span class="split-piece">${escapeHTML(s)}</span>`).join('<span style="color:#8ca9a1">/</span>')}</div>`:''}
+    <div class="split-tiles" aria-label="拼字拆分">${(w.split||w.word).split('/').map(s=>`<span class="split-piece">${escapeHTML(s.trim())}</span>`).join('<span style="color:#8ca9a1">/</span>')}</div>
     ${w.usage?`<div class="word-usage">📌 ${escapeHTML(w.usage)} ${voiceButton(w.usage)}</div>`:''}
     <button class="details-toggle" type="button" data-detail-toggle="${index}" aria-expanded="false">查看用法、相似詞及變化 <span aria-hidden="true">⌄</span></button>
-    <div class="word-detail" id="word-detail-${index}"><dl>${details.map(d=>`<dt>${escapeHTML(d[0])}</dt><dd>${escapeHTML(compact(d[1]))}</dd>`).join('')}</dl>
+    <button class="details-toggle" type="button" data-focus-index="${index}">◉ 單一單字專注畫面 →</button>
+    <div class="word-detail" id="word-detail-${index}">${details.length?`<dl>${details.map(d=>`<dt>${escapeHTML(d[0])}</dt><dd>${escapeHTML(d[1])}</dd>`).join('')}</dl>`:'<p class="muted">本字的詞族與延伸比較資料尚未補充。</p>'}
     ${w.forms?`<h4 style="margin:15px 0 6px">動詞變化</h4><div class="forms-grid">${w.forms.map((f,i)=>`<div class="form-chip"><strong>${forms[i]}</strong>${escapeHTML(f)}</div>`).join('')}</div>`:''}</div>
   </article>`;
 }
@@ -179,6 +284,104 @@ function renderWords(reset=false) {
   $('#word-result-status').textContent=`找到 ${filtered.length} 個字詞，顯示 ${subset.length} 個；點卡片查看詳細資料。`;
   $('#word-grid').innerHTML=subset.length?subset.map(renderVocabCard).join(''):'<div class="surface-card">找不到符合的字詞，試試其他英文、中文或主題。</div>';
   $('#show-more-words').hidden=subset.length>=filtered.length;
+}
+
+function openFocus(words,index=0,origin='words') {
+  state.focusWords=words.length?words:learningVocabulary;
+  state.focusIndex=Math.min(Math.max(0,index),state.focusWords.length-1);
+  state.focusRevealed=false;
+  state.focusOrigin=origin;
+  renderFocus();
+  selectPage('focus');
+}
+function renderFocus() {
+  const words=state.focusWords.length?state.focusWords:learningVocabulary;
+  const w=words[state.focusIndex];
+  if(!w)return;
+  $('#exit-focus').textContent=state.focusOrigin==='path'?'返回學習單元':'返回單字列表';
+  $('#focus-position').textContent=`${(state.focusIndex+1).toLocaleString('en-US')} / ${words.length.toLocaleString('en-US')}`;
+  const splits=(w.split||w.word).split('/').map(x=>x.trim());
+  const single=splits.length===1;
+  $('#focus-card').innerHTML=`
+    <span class="focus-label">Vocabulary Flashcard · ${escapeHTML(w.category)}</span>
+    <div class="focus-word">${escapeHTML(w.word)}</div>
+    ${voiceButton(w.word,'▶ 聽發音')}
+    <div class="split-tiles">${splits.map((x,i)=>`${i?'<span style="color:#a8bbb3">/</span>':''}<span class="split-piece">${escapeHTML(x)}</span>`).join('')}</div>
+    ${single?'<div class="focus-one-syllable">單音節或固定詞組：不強制拆分</div>':''}
+    ${!state.focusRevealed?`<button type="button" class="primary-button focus-reveal" data-focus-reveal="1">顯示中文與詳解 ↓</button>`:
+    `<div class="focus-answer"><h3>${escapeHTML(w.meaning)}</h3>
+      <p><strong>詞性：</strong>${escapeHTML(w.pos)}　｜　<strong>來源：</strong>${escapeHTML(w.source)}</p>
+      ${w.usage?`<p><strong>常見搭配：</strong>${escapeHTML(w.usage)} ${voiceButton(w.usage)}</p>`:''}
+      ${w.synonyms?`<p><strong>同義／近義：</strong>${escapeHTML(w.synonyms)}</p>`:''}
+      ${w.antonyms?`<p><strong>反義詞：</strong>${escapeHTML(w.antonyms)}</p>`:''}
+      ${w.confusing?`<p><strong>易混淆詞：</strong>${escapeHTML(w.confusing)}</p>`:''}
+      ${w.family?`<p><strong>字根／詞族：</strong>${escapeHTML(w.family)}</p>`:''}
+      ${w.note?`<p><strong>學習提醒：</strong>${escapeHTML(w.note)}</p>`:''}
+      ${w.forms?`<div class="forms-grid">${['原形','現在第三人稱','過去式','過去分詞','進行式 V-ing','未來式'].map((name,i)=>`<div class="form-chip"><strong>${name}</strong>${escapeHTML(w.forms[i])}</div>`).join('')}</div>`:''}
+      <div class="focus-actions"><button type="button" class="outline-button" data-focus-reveal="0">重新遮住答案 ↑</button></div>
+    </div>`}`;
+  const back=$('[data-focus-nav="prev"]'),next=$('[data-focus-nav="next"]');
+  back.disabled=state.focusIndex===0;
+  next.disabled=state.focusIndex>=words.length-1;
+}
+
+function loadProgress() {
+  try {
+    const item=JSON.parse(window.localStorage.getItem('toeic_progress_v2')||'{}');
+    state.unit=Math.min(Math.max(1,Number(item.unit)||1),Math.ceil(vocab.length/WORDS_PER_UNIT));
+    state.completedUnits=new Set(Array.isArray(item.completed)?item.completed.filter(x=>Number.isInteger(x)&&x>=1&&x<=300):[]);
+  } catch { state.unit=1;state.completedUnits=new Set(); }
+}
+function saveProgress() {
+  try{window.localStorage.setItem('toeic_progress_v2',JSON.stringify({unit:state.unit,completed:[...state.completedUnits]}));}
+  catch { /* 仍可使用，不要求登入或啟用儲存權限 */ }
+}
+function unitWords(unit=state.unit) {return learningVocabulary.slice((unit-1)*WORDS_PER_UNIT,unit*WORDS_PER_UNIT)}
+function getUnitQuiz(unit=state.unit) {
+  const words=unitWords(unit),picks=[0,3,7].filter(i=>i<words.length);
+  return picks.map((wordIndex,qIndex)=>{
+    const answer=words[wordIndex];
+    const pool=[answer],used=new Set([answer.meaning]);
+    for(const w of [...words.slice(qIndex+1),...words.slice(0,qIndex+1),...learningVocabulary.slice(unit*3,unit*3+20)]){
+      if(w.word===answer.word||used.has(w.meaning))continue;
+      pool.push(w);used.add(w.meaning);
+      if(pool.length===4)break;
+    }
+    const rotated=[...pool.slice(qIndex%4),...pool.slice(0,qIndex%4)];
+    return {answer,options:rotated,correct:rotated.indexOf(answer),id:`${unit}-${wordIndex}`};
+  });
+}
+function renderUnitQuiz() {
+  const el=$('#path-quiz');if(!el)return;
+  const questions=getUnitQuiz();
+  el.innerHTML=`<span class="path-eyebrow">🎯 單元自測</span><h2>學完後，試著自己選中文意思</h2>
+    <p>先作答再看詳解；每題的四個選項都會說明對應到哪一個字。</p>
+    ${questions.map((q,i)=>{
+      const selected=state.unitQuizAnswers[q.id],solved=selected!==undefined;
+      return `<div class="path-mini-quiz"><p><strong>第 ${i+1} 題：</strong>${escapeHTML(q.answer.word)} ${voiceButton(q.answer.word)}</p>
+        <div class="path-mini-options">${q.options.map((w,j)=>`<button type="button" class="option-button ${solved?(j===q.correct?'correct':selected===j?'incorrect':''):''}" data-unit-choose="${i}:${j}" ${solved?'disabled':''}><span class="choice-letter">${'ABCD'[j]}.</span>${escapeHTML(w.meaning)}</button>`).join('')}</div>
+        ${solved?`<div class="path-mini-feedback"><strong>${selected===q.correct?'✓ 答對了':'再記一次'}</strong>　${escapeHTML(q.answer.word)}（${escapeHTML(q.answer.pos)}）＝${escapeHTML(q.answer.meaning)}。<div>${q.options.map((w,j)=>`${'ABCD'[j]}：${escapeHTML(w.meaning)} 是 ${escapeHTML(w.word)} 的意思。`).join('<br>')}</div></div>`:''}
+      </div>`;
+    }).join('')}`;
+}
+function renderPath() {
+  const total=Math.ceil(learningVocabulary.length/WORDS_PER_UNIT),words=unitWords();
+  const lesson=LESSONS[Math.floor((state.unit-1)/2)%LESSONS.length];
+  const reviewed=Math.floor((state.unit-1)/2)>=LESSONS.length;
+  const completed=state.completedUnits.size;
+  $('#path-summary').innerHTML=`
+    <div class="path-stat"><small>目前學習單元</small><strong>${state.unit} / ${total}</strong><p>每單元 10 個字</p><div class="progress-track"><div class="progress-fill" style="width:${Math.round(completed/total*100)}%"></div></div></div>
+    <div class="path-stat"><small>已完成</small><strong>${completed} 單元</strong><p>僅儲存在目前瀏覽器</p></div>
+    <div class="path-stat"><small>單字總量</small><strong>${learningVocabulary.length.toLocaleString('en-US')} 字</strong><p>常用英文 → 商務多益</p></div>`;
+  $('#path-lesson').innerHTML=`<span class="path-eyebrow">📘 ${reviewed?'文法複習':'本單元文法課'}</span><h2>${escapeHTML(lesson.title)}</h2>
+    <p>${escapeHTML(lesson.subtitle)}</p>
+    <ol class="path-steps"><li>先看這一課的中文文法說明。</li><li>點英文例句旁的播放鍵聽發音。</li><li>手寫簡短筆記並練習題目。</li></ol>
+    <div class="lesson-actions"><button type="button" class="primary-button" data-path-grammar="${escapeHTML(lesson.id)}">開始文法課 →</button><button type="button" class="outline-button" data-notes-jump="${escapeHTML(lesson.id)}">抄寫本課筆記</button></div>`;
+  $('#path-words').innerHTML=`<span class="path-eyebrow">🧩 本單元 10 個單字</span><h2>先聽、再看、最後回想</h2><p>點單字可進入只有一張字卡的畫面。</p>
+    <div class="path-word-list">${words.map((w,i)=>`<div class="path-word"><button type="button" data-focus-unit-word="${i}"><strong>${escapeHTML(w.word)}</strong><small>${escapeHTML(w.meaning)}</small></button>${voiceButton(w.word)}</div>`).join('')}</div>`;
+  $('#path-bottom').innerHTML=`<div class="path-actions"><button type="button" class="outline-button" data-unit-nav="prev" ${state.unit===1?'disabled':''}>← 前一單元</button><button type="button" class="outline-button" data-unit-nav="next" ${state.unit===total?'disabled':''}>下一單元 →</button></div>
+    <button type="button" class="primary-button" data-unit-nav="done">${state.completedUnits.has(state.unit)?'✓ 已完成本單元，繼續下一個':'✓ 標記已完成並繼續'} →</button>`;
+  renderUnitQuiz();
 }
 
 function getQuestions() {return state.practiceCategory==='全部'?QUESTIONS:QUESTIONS.filter(q=>q.cat===state.practiceCategory)}
@@ -223,6 +426,26 @@ function notesText(lesson) {
 
 document.addEventListener('click', e=>{
   const say=e.target.closest('[data-say]');if(say){speak(say.dataset.say);return;}
+  if(e.target.closest('#go-back')){goBack();return;}
+  if(e.target.closest('#exit-focus')){if(state.navDepth>0)goBack();else selectPage(state.focusOrigin);return;}
+  if(e.target.closest('#start-focus')){openFocus(vocabMatches(),0,'words');return;}
+  const focusIndex=e.target.closest('[data-focus-index]');if(focusIndex){openFocus(vocabMatches(),Number(focusIndex.dataset.focusIndex),'words');return;}
+  const focusUnit=e.target.closest('[data-focus-unit-word]');if(focusUnit){openFocus(unitWords(),Number(focusUnit.dataset.focusUnitWord),'path');return;}
+  const focusNav=e.target.closest('[data-focus-nav]');if(focusNav){const delta=focusNav.dataset.focusNav==='next'?1:-1;state.focusIndex=Math.max(0,Math.min(state.focusWords.length-1,state.focusIndex+delta));state.focusRevealed=false;renderFocus();return;}
+  const reveal=e.target.closest('[data-focus-reveal]');if(reveal){state.focusRevealed=reveal.dataset.focusReveal==='1';renderFocus();return;}
+  const unitNav=e.target.closest('[data-unit-nav]');if(unitNav){
+    if(unitNav.dataset.unitNav==='done')state.completedUnits.add(state.unit);
+    if(unitNav.dataset.unitNav==='prev')state.unit=Math.max(1,state.unit-1);
+    else state.unit=Math.min(Math.ceil(learningVocabulary.length/WORDS_PER_UNIT),state.unit+1);
+    saveProgress();renderPath();return;
+  }
+  const choose=e.target.closest('[data-unit-choose]');if(choose){
+    const [qIndex,option]=choose.dataset.unitChoose.split(':').map(Number),q=getUnitQuiz()[qIndex];
+    if(q&&state.unitQuizAnswers[q.id]===undefined){state.unitQuizAnswers[q.id]=option;renderUnitQuiz();}
+    return;
+  }
+  const pathGrammar=e.target.closest('[data-path-grammar]');if(pathGrammar){state.lesson=pathGrammar.dataset.pathGrammar;renderLessons();selectPage('grammar');return;}
+  const lessonStep=e.target.closest('[data-lesson-step]');if(lessonStep){const index=LESSONS.findIndex(x=>x.id===state.lesson),shift=lessonStep.dataset.lessonStep==='next'?1:-1;state.lesson=LESSONS[Math.max(0,Math.min(LESSONS.length-1,index+shift))].id;renderLessons();return;}
   const jump=e.target.closest('[data-page-target]');if(jump){selectPage(jump.dataset.pageTarget);return;}
   const lesson=e.target.closest('[data-lesson]');if(lesson){state.lesson=lesson.dataset.lesson;renderLessons();return;}
   const word=e.target.closest('[data-word-jump]');if(word){selectPage('words');$('#word-query').value=word.dataset.wordJump;$('#word-category').value='';$('#word-source').value='';renderWords(true);return;}
@@ -254,4 +477,15 @@ $('#word-category').innerHTML='<option value="">全部主題</option>'+categorie
 $('#notes-lesson').innerHTML=LESSONS.map(x=>`<option value="${x.id}">${escapeHTML(x.title)}</option>`).join('');
 $('#current-word-count').textContent=vocab.length.toLocaleString('en-US');
 $('#current-lesson-count').textContent=LESSONS.length;
-renderLessons();renderWords(true);renderPractice();renderNotes();
+loadProgress();
+renderLessons();renderWords(true);renderPractice();renderNotes();renderPath();
+const firstPage=window.location.hash.slice(1);
+const safePage=PAGES.includes(firstPage)?firstPage:'home';
+if(safePage==='focus'){
+  state.focusWords=learningVocabulary;
+  state.focusIndex=0;
+  state.focusOrigin='words';
+  renderFocus();
+}
+window.history.replaceState({toeicPage:safePage,toeicDepth:0},'',`#${safePage}`);
+showPage(safePage);
