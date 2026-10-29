@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0d726e">
-  <meta name="description" content="從英文基礎開始，透過文法小卡、TOEIC 單字、英文發音與詳細解題練習學習多益。">
+  <meta name="theme-color" content="#7357b5">
+  <meta name="description" content="從基礎文法與單字開始，搭配詞族、例句與發音循序學習，最後才準備多益考題。">
   <title>TOEIC 小步學｜多益英文學習平台</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="updates.css">
-  <script defer src="data.js"></script>
-  <script defer src="app.js"></script>
+  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="updates.css?v=3">
+  <script defer src="data.js?v=3"></script>
+  <script defer src="app.js?v=3"></script>
 </head>
 <body>
   <div class="site-shell">
@@ -19,12 +19,12 @@
         <span class="brand-copy"><strong>TOEIC 小步學</strong><small>一點一點，把英文學會</small></span>
       </button>
       <nav class="nav" aria-label="主要功能">
-        <button type="button" class="nav-button active" data-page-target="home">首頁</button>
-        <button type="button" class="nav-button" data-page-target="path">學習</button>
-        <button type="button" class="nav-button" data-page-target="grammar">文法</button>
-        <button type="button" class="nav-button" data-page-target="words">單字</button>
-        <button type="button" class="nav-button" data-page-target="practice">練習</button>
-        <button type="button" class="nav-button" data-page-target="notes">筆記</button>
+        <a class="nav-button active" href="#home" data-page-target="home">首頁</a>
+        <a class="nav-button" href="#path" data-page-target="path">學習</a>
+        <a class="nav-button" href="#grammar" data-page-target="grammar">文法</a>
+        <a class="nav-button" href="#words" data-page-target="words">單字</a>
+        <a class="nav-button" href="#examples" data-page-target="examples">例句</a>
+        <a class="nav-button" href="#notes" data-page-target="notes">筆記</a>
       </nav>
     </header>
 
@@ -58,7 +58,7 @@
           <div class="hero-copy">
             <span class="eyebrow">TOEIC FROM ZERO · 由淺入深</span>
             <h1 id="home-title">把多益英文，<br><em>學得簡單一點。</em></h1>
-            <p>先懂文法、再學單字，看到英文就能聽發音，做完題目還有中文詳解。適合隨時拿起手機，讀一小段、學一點點。</p>
+            <p>先弄懂文法，再學單字的意思和變化，接著用例句了解如何使用。等基礎熟悉以後，最後才學多益解題技巧。</p>
             <div class="hero-actions">
               <button class="primary-button" type="button" data-page-target="path">從第一個學習單元開始 <span aria-hidden="true">→</span></button>
               <button class="outline-button" type="button" data-page-target="words">先查單字</button>
@@ -70,13 +70,14 @@
             <div class="floating-chip">🎧 聽得懂，才記得住</div>
           </div>
         </div>
-        <div class="section-heading"><div><p class="kicker">YOUR LEARNING PATH</p><h2>今天想學什麼？</h2></div><span class="muted">不用登入 · 隨時開始</span></div>
+        <div class="section-heading"><div><p class="kicker">YOUR LEARNING PATH</p><h2>照著順序，一步一步學</h2></div><span class="muted">不用登入 · 隨時開始</span></div>
         <div class="feature-grid">
-          <button class="feature-card card-mint" type="button" data-page-target="path"><span class="feature-icon">📘</span><strong>循序學習</strong><span>每次 10 個單字、搭配一堂文法課與練習，按順序慢慢學。</span><b>開始第一單元 ↗</b></button>
+          <button class="feature-card card-mint" type="button" data-page-target="path"><span class="feature-icon">📘</span><strong>階段式學習</strong><span>每單元一堂文法課、10 個單字、例句與中文解析。</span><b>繼續學習 ↗</b></button>
           <button class="feature-card card-peach" type="button" data-page-target="words"><span class="feature-icon">🧩</span><strong>單字小卡</strong><span>看拆分、詞性、用法、單字家族，再點一下聽發音。</span><b>查詢單字 ↗</b></button>
-          <button class="feature-card card-blue" type="button" data-page-target="practice"><span class="feature-icon">🎯</span><strong>多益練習</strong><span>文法、閱讀與簡易聽力題；每個選項都有解析。</span><b>試試看 ↗</b></button>
+          <button class="feature-card card-blue" type="button" data-page-target="examples"><span class="feature-icon">💬</span><strong>例句教室</strong><span>每句都有中文、用法提醒和播放鍵，先理解再進階。</span><b>聽例句 ↗</b></button>
           <button class="feature-card card-cream" type="button" data-page-target="notes"><span class="feature-icon">📝</span><strong>手寫筆記</strong><span>將當堂重點濃縮整理，方便抄寫到自己的筆記本。</span><b>查看筆記 ↗</b></button>
         </div>
+        <div class="study-roadmap"><span><b>01</b> 基礎文法與常用字</span><span>→</span><span><b>02</b> 時態與詞性變化</span><span>→</span><span><b>03</b> 商務情境例句</span><span>→</span><span><b>04</b> 最後才學多益考題</span></div>
         <div class="home-bottom">
           <div class="info-card"><span>📚</span><strong id="current-word-count">—</strong><small>可查單字</small></div>
           <div class="info-card"><span>🎓</span><strong id="current-lesson-count">—</strong><small>文法課程</small></div>
@@ -85,7 +86,8 @@
       </section>
 
       <section class="page" id="page-path" aria-labelledby="path-title">
-        <div class="page-heading"><p class="kicker">STEP BY STEP</p><h1 id="path-title">循序學習路線</h1><p>每個單元學 10 個字，從常用字到多益商務字。先認識單字、聽發音，再搭配文法與題目。</p></div>
+        <div class="page-heading"><p class="kicker">STEP BY STEP</p><h1 id="path-title">循序學習路線</h1><p>每個單元先看文法，再學 10 個單字，最後聽例句與看中文解析。模擬題留到最後一階段。</p></div>
+        <div class="stage-banner" id="path-stage"></div>
         <div class="path-summary" id="path-summary"></div>
         <div class="path-layout">
           <article class="surface-card" id="path-lesson"></article>
@@ -93,6 +95,13 @@
         </div>
         <article class="surface-card path-quiz" id="path-quiz"></article>
         <div class="path-bottom" id="path-bottom"></div>
+      </section>
+
+      <section class="page" id="page-examples" aria-labelledby="examples-title">
+        <div class="page-heading"><p class="kicker">LEARN WITH SENTENCES</p><h1 id="examples-title">例句教室</h1><p>先聽整句、認識詞性與意思，再看中文與文法提醒；現在不用急著做多益測驗。</p></div>
+        <div class="surface-card examples-intro"><div><span class="path-eyebrow">🎧 聽英文 · 💡 看用法</span><h2>第 <span id="examples-unit">1</span> 單元例句</h2><p>搭配本單元 10 個單字，一個一個理解。</p></div><button class="outline-button" type="button" data-page-target="path">回本單元學習 →</button></div>
+        <div id="examples-list" class="examples-list"></div>
+        <div class="path-bottom"><div class="path-actions"><button class="outline-button" type="button" data-example-step="prev">← 前一單元</button><button class="outline-button" type="button" data-example-step="next">下一單元 →</button></div><button class="primary-button" type="button" data-page-target="path">返回學習路線</button></div>
       </section>
 
       <section class="page" id="page-grammar" aria-labelledby="grammar-title">
