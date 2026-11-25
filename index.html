@@ -3,150 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#7357b5">
-  <meta name="description" content="從基礎文法與單字開始，搭配詞族、例句與發音循序學習，最後才準備多益考題。">
-  <title>TOEIC 小步學｜多益英文學習平台</title>
-  <link rel="stylesheet" href="styles.css?v=3">
-  <link rel="stylesheet" href="updates.css?v=3">
-  <script defer src="data.js?v=3"></script>
-  <script defer src="app.js?v=3"></script>
+  <meta name="theme-color" content="#7766b5">
+  <meta name="description" content="每天五個單字、一點文法、例句與小練習，讓英文循序累積。">
+  <title>小步學英文｜從零基礎到多益</title>
+  <link rel="stylesheet" href="styles.css?v=5">
+  <script defer src="data.js?v=5"></script>
+  <script defer src="curriculum.js?v=5"></script>
+  <script defer src="papers-data.js?v=5"></script>
+  <script defer src="app.js?v=5"></script>
 </head>
 <body>
-  <div class="site-shell">
-    <header class="topbar">
-      <button type="button" class="brand" data-page-target="home" aria-label="回首頁">
-        <span class="brand-icon">T</span>
-        <span class="brand-copy"><strong>TOEIC 小步學</strong><small>一點一點，把英文學會</small></span>
-      </button>
-      <nav class="nav" aria-label="主要功能">
-        <a class="nav-button active" href="#home" data-page-target="home">首頁</a>
-        <a class="nav-button" href="#path" data-page-target="path">學習</a>
-        <a class="nav-button" href="#grammar" data-page-target="grammar">文法</a>
-        <a class="nav-button" href="#words" data-page-target="words">單字</a>
-        <a class="nav-button" href="#examples" data-page-target="examples">例句</a>
-        <a class="nav-button" href="#notes" data-page-target="notes">筆記</a>
+  <div class="aurora aurora-one" aria-hidden="true"></div><div class="aurora aurora-two" aria-hidden="true"></div>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#home" aria-label="回首頁"><span class="brand-symbol">✦</span><span><strong>小步學英文</strong><small>MY ENGLISH GARDEN</small></span></a>
+      <nav class="site-nav" aria-label="主要選單">
+        <a href="#home" data-nav="home">首頁</a>
+        <a href="#learn" data-nav="learn">學習</a>
+        <a href="#words" data-nav="words">單字庫</a>
+        <a href="#grammar" data-nav="grammar">文法庫</a>
+        <a href="#notes" data-nav="notes">筆記</a>
+        <a href="#papers" data-nav="papers">練習卷</a>
       </nav>
-    </header>
-
-    <div class="audio-bar" aria-label="全站發音設定">
-      <span class="audio-label">🔊 點英文旁的播放鍵</span>
-      <label>口音
-        <select id="accent-select" aria-label="發音口音">
-          <option value="en-US">美式</option>
-          <option value="en-GB">英式</option>
-        </select>
-      </label>
-      <label>速度
-        <select id="rate-select" aria-label="朗讀速度">
-          <option value="0.7">慢速</option>
-          <option value="0.85">稍慢</option>
-          <option value="1" selected>正常</option>
-        </select>
-      </label>
-      <button type="button" id="repeat-audio" class="subtle-button">↻ 重播</button>
-      <button type="button" id="stop-audio" class="subtle-button">■ 停止</button>
-      <span id="audio-status" class="audio-status" aria-live="polite"></span>
+      <button class="sound-toggle" id="audio-settings-toggle" type="button" aria-label="語音設定" title="語音設定">♫ <span>發音設定</span></button>
     </div>
-    <div class="page-back" id="page-back" hidden>
-      <button type="button" class="outline-button" id="go-back">← 返回上一頁</button>
-      <span id="page-back-label" class="muted">學習進度</span>
+    <div class="audio-settings" id="audio-settings" hidden>
+      <label>口音 <select id="accent"><option value="en-US">美式</option><option value="en-GB">英式</option></select></label>
+      <label>速度 <select id="speed"><option value="0.7">慢速</option><option value="0.85">稍慢</option><option value="1" selected>正常</option></select></label>
+      <button id="stop-speech" type="button" class="mini-btn">停止朗讀</button>
+      <span id="speech-status" role="status"></span>
     </div>
-
-    <main id="app">
-      <section class="page active" id="page-home" aria-labelledby="home-title">
-        <div class="hero">
-          <div class="hero-copy">
-            <span class="eyebrow">TOEIC FROM ZERO · 由淺入深</span>
-            <h1 id="home-title">把多益英文，<br><em>學得簡單一點。</em></h1>
-            <p>先弄懂文法，再學單字的意思和變化，接著用例句了解如何使用。等基礎熟悉以後，最後才學多益解題技巧。</p>
-            <div class="hero-actions">
-              <button class="primary-button" type="button" data-page-target="path">從第一個學習單元開始 <span aria-hidden="true">→</span></button>
-              <button class="outline-button" type="button" data-page-target="words">先查單字</button>
-            </div>
-          </div>
-          <div class="hero-panel" aria-hidden="true">
-            <div class="floating-word"><span>☀ 今日單字</span><strong>employee</strong><small>em / ploy / ee · 員工</small></div>
-            <div class="floating-note"><span>✦ Grammar</span><b>She <i>is</i> a manager.</b><small>主詞 + be 動詞 + 名詞</small></div>
-            <div class="floating-chip">🎧 聽得懂，才記得住</div>
-          </div>
-        </div>
-        <div class="section-heading"><div><p class="kicker">YOUR LEARNING PATH</p><h2>照著順序，一步一步學</h2></div><span class="muted">不用登入 · 隨時開始</span></div>
-        <div class="feature-grid">
-          <button class="feature-card card-mint" type="button" data-page-target="path"><span class="feature-icon">📘</span><strong>階段式學習</strong><span>每單元一堂文法課、10 個單字、例句與中文解析。</span><b>繼續學習 ↗</b></button>
-          <button class="feature-card card-peach" type="button" data-page-target="words"><span class="feature-icon">🧩</span><strong>單字小卡</strong><span>看拆分、詞性、用法、單字家族，再點一下聽發音。</span><b>查詢單字 ↗</b></button>
-          <button class="feature-card card-blue" type="button" data-page-target="examples"><span class="feature-icon">💬</span><strong>例句教室</strong><span>每句都有中文、用法提醒和播放鍵，先理解再進階。</span><b>聽例句 ↗</b></button>
-          <button class="feature-card card-cream" type="button" data-page-target="notes"><span class="feature-icon">📝</span><strong>手寫筆記</strong><span>將當堂重點濃縮整理，方便抄寫到自己的筆記本。</span><b>查看筆記 ↗</b></button>
-        </div>
-        <div class="study-roadmap"><span><b>01</b> 基礎文法與常用字</span><span>→</span><span><b>02</b> 時態與詞性變化</span><span>→</span><span><b>03</b> 商務情境例句</span><span>→</span><span><b>04</b> 最後才學多益考題</span></div>
-        <div class="home-bottom">
-          <div class="info-card"><span>📚</span><strong id="current-word-count">—</strong><small>可查單字</small></div>
-          <div class="info-card"><span>🎓</span><strong id="current-lesson-count">—</strong><small>文法課程</small></div>
-          <div class="info-card"><span>✨</span><strong>300</strong><small>循序學習單元</small></div>
-        </div>
-      </section>
-
-      <section class="page" id="page-path" aria-labelledby="path-title">
-        <div class="page-heading"><p class="kicker">STEP BY STEP</p><h1 id="path-title">循序學習路線</h1><p>每個單元先看文法，再學 10 個單字，最後聽例句與看中文解析。模擬題留到最後一階段。</p></div>
-        <div class="stage-banner" id="path-stage"></div>
-        <div class="path-summary" id="path-summary"></div>
-        <div class="path-layout">
-          <article class="surface-card" id="path-lesson"></article>
-          <article class="surface-card" id="path-words"></article>
-        </div>
-        <article class="surface-card path-quiz" id="path-quiz"></article>
-        <div class="path-bottom" id="path-bottom"></div>
-      </section>
-
-      <section class="page" id="page-examples" aria-labelledby="examples-title">
-        <div class="page-heading"><p class="kicker">LEARN WITH SENTENCES</p><h1 id="examples-title">例句教室</h1><p>先聽整句、認識詞性與意思，再看中文與文法提醒；現在不用急著做多益測驗。</p></div>
-        <div class="surface-card examples-intro"><div><span class="path-eyebrow">🎧 聽英文 · 💡 看用法</span><h2>第 <span id="examples-unit">1</span> 單元例句</h2><p>搭配本單元 10 個單字，一個一個理解。</p></div><button class="outline-button" type="button" data-page-target="path">回本單元學習 →</button></div>
-        <div id="examples-list" class="examples-list"></div>
-        <div class="path-bottom"><div class="path-actions"><button class="outline-button" type="button" data-example-step="prev">← 前一單元</button><button class="outline-button" type="button" data-example-step="next">下一單元 →</button></div><button class="primary-button" type="button" data-page-target="path">返回學習路線</button></div>
-      </section>
-
-      <section class="page" id="page-grammar" aria-labelledby="grammar-title">
-        <div class="page-heading"><p class="kicker">GRAMMAR CLASSROOM</p><h1 id="grammar-title">文法教室</h1><p>從最基本的詞性和句子開始；每個英文例句都能直接播放。</p></div>
-        <div class="learning-layout">
-          <aside class="lesson-list" id="lesson-list" aria-label="文法課程選單"></aside>
-          <article id="lesson-detail" class="lesson-detail"></article>
-        </div>
-      </section>
-
-      <section class="page" id="page-words" aria-labelledby="words-title">
-        <div class="page-heading"><p class="kicker">VOCABULARY CARDS</p><h1 id="words-title">單字小卡</h1><p>原書單字重新分類，搭配補充單字。單字、例句可播放；詳細資訊按需展開。</p></div>
-        <div class="word-toolbar">
-          <label class="search-wrap"><span>⌕</span><input id="word-query" type="search" placeholder="搜尋英文或中文，例如：manager、申請" autocomplete="off"></label>
-          <select id="word-category" aria-label="單字主題"><option value="">全部主題</option></select>
-          <select id="word-source" aria-label="單字來源"><option value="">全部來源</option><option value="原書">原書</option><option value="補充">多益補充</option><option value="基礎增補">基礎增補</option><option value="基礎字庫">常用基礎字庫</option></select>
-        </div>
-        <div class="word-mode-row"><button type="button" class="primary-button" id="start-focus">◉ 進入單字專注模式</button><span class="muted">一次只看一個字，先想意思，再翻開中文。</span></div>
-        <div id="word-result-status" class="result-line" aria-live="polite"></div>
-        <div id="word-grid" class="word-grid"></div>
-        <div class="center"><button id="show-more-words" type="button" class="outline-button" hidden>顯示更多單字 ↓</button></div>
-        <div class="tip-box">💡 小提醒：每個字都有拼字拆分欄位；較短的單音節字通常會保持完整。這是協助記憶拼字的分段，不一定與真正的字根或音節完全相同。</div>
-      </section>
-
-      <section class="page" id="page-focus" aria-labelledby="focus-title">
-        <div class="page-heading"><p class="kicker">ONE WORD AT A TIME</p><h1 id="focus-title">單字專注模式</h1><p>每次只顯示一個字，先聽發音與試著回想，再按按鈕看答案。</p></div>
-        <div class="focus-nav"><button type="button" class="outline-button" data-focus-nav="prev">← 上一個字</button><span id="focus-position" class="muted"></span><button type="button" class="outline-button" data-focus-nav="next">下一個字 →</button></div>
-        <article class="focus-card" id="focus-card"></article>
-        <div class="center focus-exit"><button type="button" class="outline-button" id="exit-focus">返回單字列表</button></div>
-      </section>
-
-      <section class="page" id="page-practice" aria-labelledby="practice-title">
-        <div class="page-heading"><p class="kicker">PRACTICE & EXPLANATIONS</p><h1 id="practice-title">練習與詳解</h1><p>先自己選答案，再看中文翻譯、解題線索，以及四個選項的理由。所有題目皆為自編練習。</p></div>
-        <div class="practice-filter" id="practice-filter" role="group" aria-label="練習類型"></div>
-        <div id="practice-container"></div>
-      </section>
-
-      <section class="page" id="page-notes" aria-labelledby="notes-title">
-        <div class="page-heading"><p class="kicker">HANDWRITTEN NOTES</p><h1 id="notes-title">手寫筆記</h1><p>重點整理得清楚，讓你能直接抄到筆記本中。可選擇課程查看，不必重新找聊天紀錄。</p></div>
-        <div class="notes-toolbar"><label>選擇課程 <select id="notes-lesson"></select></label><button id="copy-notes" type="button" class="outline-button">複製筆記</button><button id="print-notes" type="button" class="outline-button">列印</button></div>
-        <article class="note-paper" id="notes-content"></article>
-      </section>
-    </main>
-    <footer class="site-footer"><span>TOEIC 小步學 · 自編入門教材，非 ETS 官方網站或試題</span><span>部分英中字義取自 ECDICT（MIT） · 無需登入 · 瀏覽器語音朗讀</span></footer>
+  </header>
+  <div class="app-shell">
+    <div id="history-bar" class="history-bar" hidden><button id="back-btn" type="button" class="text-button">← 返回上一頁</button><span id="crumbs" class="breadcrumbs"></span></div>
+    <main id="content" tabindex="-1" aria-live="polite"></main>
+    <footer class="footer"><span>🌱 每次學一點，累積就會看得見。</span><span>教材為自編基礎練習，非官方多益題目。進度僅保存在這台裝置。</span></footer>
   </div>
-  <noscript><p style="padding:20px;text-align:center">此學習網站需要啟用 JavaScript，才能顯示課程、單字和練習。</p></noscript>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
