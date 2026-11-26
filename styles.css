@@ -217,3 +217,79 @@ p{color:#696478}
 @media(max-width:660px){.topic-pair{grid-template-columns:1fr}.grammar-compare{grid-template-columns:1fr}.notebook-detailed .notebook-layout{grid-template-columns:62px minmax(0,1fr)}.notebook-detailed .notes-main{padding-left:10px}.notebook-detailed .notebook-sheet{padding-right:12px}.grammar-explain-block{padding:10px 11px}.notebook-detailed .scribble-heading{font-size:14px}}
 @media(max-width:380px){.notebook-detailed .notebook-layout{grid-template-columns:45px minmax(0,1fr)}.notebook-detailed .cue-column{font-size:9px}}
 @media print{.notebook-detailed .notebook-sheet{min-height:0!important;height:auto!important;overflow:visible!important;break-inside:auto!important;padding:9mm 8mm 7mm 11mm!important}.notebook-detailed .notebook-sheet:first-child{break-after:page!important}.notebook-detailed .hand-word,.notebook-detailed .grammar-explain-block,.notebook-detailed .scribble-rule{break-inside:avoid!important}.notebook-detailed .notebook-layout{grid-template-columns:20mm minmax(0,1fr)}.notebook-detailed .sheet-header{break-after:avoid}}
+
+/* v8：讓真正的教學例句一眼看出正在學的單字／文法。 */
+.focus-mark{color:#9d2f63;background:#ffe5a5;border-radius:5px;padding:1px 3px;box-decoration-break:clone;-webkit-box-decoration-break:clone;font-weight:900;line-height:1.85}
+.highlighted-example{margin:10px 0;border:1px solid #e8d6f4;background:linear-gradient(120deg,#fffcf6,#f8f5ff 78%);box-shadow:0 3px 12px #4b387209;gap:10px}
+.highlighted-example>div{min-width:0;flex:1}
+.highlighted-example strong{line-height:2;overflow-wrap:anywhere}
+.highlighted-example .play{flex:0 0 auto;min-width:max-content}
+.detail-line .readable-pair{margin:8px 0;padding:12px 14px;background:#f8fbff;border:1px solid #e5edf5;border-radius:14px}
+.word-detail-full{max-width:960px;margin:0 auto}
+.word-detail-full .word-insight{display:grid;gap:8px}
+.word-detail-full .detail-line{padding:14px 0}
+.word-detail-full .detail-line .chip-word{min-height:52px}
+.word-detail-full .detail-line .chip-word small{display:block;white-space:normal;margin-top:4px;line-height:1.4}
+.word-detail-full .play,.readable-pair .play{flex:0 0 auto;white-space:nowrap;min-width:max-content}
+.soft-recall{border:1px dashed #d8badb;border-radius:16px;background:linear-gradient(115deg,#fff3dd,#f4eaff);padding:17px 20px;margin:20px 0;color:#705d77;font-size:13px}
+.soft-recall p{margin:6px 0 0;line-height:1.75}
+/* 字首、字尾與詞族探索：用色彩區分，並保持每頁的學習量小。 */
+.morph-toolbar{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0 21px}
+.morph-filter{border:1.5px solid #e3d8eb;border-radius:999px;padding:10px 19px;background:white;color:#70547e;font-weight:800;cursor:pointer;font-size:13px}
+.morph-filter.active{background:#715c9e;color:white;border-color:#715c9e;box-shadow:0 5px 0 #dcc9ed}
+.morph-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.morph-card{background:#fff2df;border:1.5px solid #efce9a;padding:22px 21px;min-height:206px;border-radius:24px;text-align:left;display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:transform .2s,box-shadow .2s;min-width:0}
+.morph-card:hover{transform:translateY(-3px);box-shadow:0 12px 22px #70547e16}
+.morph-card.kind-suffix{background:#eaf7ff;border-color:#c9e3f6}
+.morph-card.kind-family{background:#edf9ef;border-color:#cbe9d7}
+.morph-card small{font-size:11px;letter-spacing:.8px;color:#997d79;font-weight:850}
+.morph-card h2{color:#664c79;font-size:28px;margin:2px 0 0;line-height:1.3;overflow-wrap:anywhere}
+.morph-card p{color:#615469;font-size:14px;font-weight:800;margin:0}
+.morph-card>span{font-size:12px;color:#817286;line-height:1.6;margin:5px 0 10px;overflow-wrap:anywhere}
+.morph-card>b{font-size:13px;color:#7155a7;margin-top:auto}
+.morph-lesson{background:#fff;border:1px solid #e9e1ee;border-radius:24px;padding:23px}
+.morph-summary{background:#f8efff;border-radius:18px;padding:18px 20px;margin-bottom:17px;color:#6e5284}
+.morph-summary b{font-size:18px}
+.morph-summary p{font-size:13px;margin:7px 0;line-height:1.8}
+.morph-word-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.morph-word{background:#fff9ef;border:1px solid #f1dfbd;border-radius:18px;padding:18px;min-height:126px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.morph-word:nth-child(even){background:#eef9f2;border-color:#d3e9db}
+.morph-word-top{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap}
+.morph-word-top b{font-size:21px;color:#534d86;overflow-wrap:anywhere}
+.morph-word-top .play{margin-left:auto;min-width:max-content;flex:0 0 auto}
+.morph-translation{font-size:15px;font-weight:800;color:#855b70;background:#fff1c7;border-radius:10px;padding:9px 11px;margin:0}
+.morph-reveal{color:#775a95;border:1px dashed #d7b1d5;border-radius:11px;background:white;padding:10px 14px;font-weight:750;cursor:pointer;text-align:left;width:fit-content}
+.morph-inline-link{background:none;border:none;color:#8372a9;cursor:pointer;text-decoration:underline;text-underline-offset:4px;font-size:12px;padding:6px 0 0;align-self:flex-start}
+.morph-example{margin-top:21px;border-radius:18px;background:#f8f3ff;padding:18px}
+.morph-example small{font-size:12px;color:#80688d;font-weight:800}
+.morph-example .example-row{margin:12px 0 0}
+.morph-practice{margin-top:19px;border-radius:18px;background:#f5f9fc;padding:22px}
+.morph-practice h3{font-size:17px;margin:10px 0 14px}
+.morph-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.morph-answer{border-radius:12px;padding:12px 14px;border:1.5px solid #d7d7ee;color:#645a8d;background:white;cursor:pointer;font-weight:800;overflow-wrap:anywhere}
+.morph-answer.correct{background:#dbf5e3;border-color:#93cfad;color:#285e43}
+.morph-answer.incorrect{background:#ffe9e7;border-color:#f0b4aa;color:#9e544a}
+.morph-feedback{background:white;border-left:4px solid #96cdae;padding:11px 14px;border-radius:9px;color:#655675;font-size:13px}
+.home-root-callout{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:20px 0;background:linear-gradient(105deg,#e9f7e4,#f5ebff,#fff0d9);border:1.5px solid #dfd5ec;border-radius:22px;padding:22px 25px}
+.home-root-callout h3{font-size:20px;color:#5a4a7f;margin:6px 0}
+.home-root-callout p{margin:0;font-size:13px;color:#736884;line-height:1.7}
+.home-root-callout>.btn{min-width:max-content;flex:0 0 auto}
+@media(max-width:920px){.morph-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-root-callout{flex-direction:column;align-items:flex-start}.home-root-callout>.btn{width:100%;min-width:0}}
+@media(max-width:660px){.morph-grid{grid-template-columns:1fr;gap:11px}.morph-card{min-height:155px;padding:18px}.morph-word-grid{grid-template-columns:1fr}.morph-lesson{padding:13px}.morph-summary,.morph-practice{padding:15px}.morph-options{grid-template-columns:1fr}.morph-word{min-height:100px;padding:14px}.morph-word-top b{font-size:19px}.site-nav{justify-content:flex-start;overflow-x:auto;scrollbar-width:thin;gap:3px}.site-nav a{flex:0 0 auto;white-space:nowrap}.highlighted-example{padding:13px;flex-wrap:wrap}.highlighted-example .play{margin-left:auto}.detail-line .readable-pair{flex-wrap:wrap}.detail-line .readable-pair .play{margin-left:auto}.home-root-callout{padding:20px}}
+@media print{.morph-toolbar,.morph-reveal,.morph-inline-link,.morph-practice{display:none!important}.focus-mark{background:#eee!important;color:#333!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.highlighted-example{break-inside:avoid}}
+/* v8 間隔複習：不直接秀中文，先回想再翻開 */
+.home-review-strip{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fff8e4;border:1.5px dashed #f2d8a3;border-radius:18px;padding:17px 21px;margin:16px 0}
+.home-review-strip>div{display:flex;flex-direction:column;gap:5px}
+.home-review-strip strong{font-size:15px;color:#806066}
+.home-review-strip span{font-size:12px;color:#99847d}
+.review-focus{max-width:780px;margin:15px auto 10px;padding:35px 26px;border-radius:25px;border:1.5px solid #e6cfdf;background:linear-gradient(145deg,#fff8e7,#f3ecff);text-align:center;box-shadow:6px 8px 0 #f0e1e7}
+.review-focus h2{font-size:42px;color:#624f88;margin:7px 0}
+.review-focus>.play{margin:0 auto 15px}
+.review-focus>.word-chunks{margin:10px auto 18px;justify-content:center}
+.review-focus .review-reveal{margin-top:20px;border-top:1px dashed #d9bbcd;padding-top:17px;text-align:left}
+.review-reveal>strong{display:block;text-align:center;font-size:21px;color:#685184;margin-bottom:14px}
+.review-grade{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.review-hint{text-align:center;margin-top:18px}
+@media(max-width:660px){.home-review-strip{flex-direction:column;align-items:stretch;padding:15px}.review-focus{padding:24px 14px}.review-focus h2{font-size:35px}.review-grade .btn{width:100%}}
+.morph-card.kind-root{background:#f6efff;border-color:#e2c9f9}
+.morph-card.kind-root small{color:#9c75b3}
