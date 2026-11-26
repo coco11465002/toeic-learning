@@ -6,7 +6,7 @@ const LESSONS=window.TOEIC_LESSONS||[];
 const PAPERS=window.TOEIC_PAPERS||[];
 const ZH=window.TOEIC_EXTRA_ZH||{};
 const ENRICH=window.TOEIC_ENRICHMENT||{};
-const MORPH=window.TOEIC_MORPHOLOGY||[];
+const MORPH=window.TOEIC_MORPH_CATALOG||window.TOEIC_MORPHOLOGY||[];
 const ENRICH_ZH=window.TOEIC_ENRICH_ZH||{};
 const PAGE=document.getElementById('content');
 const WORD_MAP=new Map(WORDS.map(w=>[w.word.toLowerCase(),w]));
@@ -34,7 +34,7 @@ if(!store.reviewCards||typeof store.reviewCards!=='object')store.reviewCards={};
 // 首次升級時，把前幾版已完成的小單元加入待複習清單，保留原本學習進度。
 if(!store.reviewMigrated){for(const u of store.completed){const n=Number(u);if(!Number.isInteger(n)||n<0||n>=UNITS)continue;for(const w of getWords(n)){const key=w.word.toLowerCase();if(!store.reviewCards[key])store.reviewCards[key]={stage:0,due:dateOffset(0)}}}store.reviewMigrated=true;try{localStorage.setItem(storageKey,JSON.stringify(store))}catch{}}
 function save(){try{localStorage.setItem(storageKey,JSON.stringify(store))}catch{}}
-const state={wordSearch:'',wordCategory:'',wordShown:30,grammarSearch:'',revealed:{},rootCategory:'all',rootRevealed:{},rootQuiz:{},reviewReveal:{}};
+const state={wordSearch:'',wordCategory:'',wordShown:30,grammarSearch:'',revealed:{},rootCategory:'all',rootSearch:'',rootGroupShown:24,rootWordShown:{},rootWordSearch:{},rootRevealed:{},rootQuiz:{},reviewReveal:{}};
 let oldHash=location.hash||'#home',historyTrail=[],lastSpoken='',toastTimer;
 const esc=x=>String(x??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 const sub=x=>String(x||'').replace(/\s+/g,' ').trim();
@@ -90,7 +90,7 @@ function related(title,raw,override){let items=override?.length?override.map(([e
 function usage(w){const arr=collocations(w);if(!arr.length)return '';return `<div class="detail-line"><div class="detail-label">常見搭配 · 中英對照</div>${arr.map(({en,zh})=>`<div class="pair readable-pair"><div><strong>${wordPaint(en,w)}</strong><br><em>${esc(zh)}</em></div>${playBtn(en,'聽搭配')}</div>`).join('')}</div>`}
 function exampleBlock(w,limit=3){const arr=examplesFor(w).slice(0,limit);if(!arr.length)return '';return `<div class="detail-line"><div class="detail-label">情境例句 · 重點已標色</div>${arr.map((x,i)=>`<div class="example-row highlighted-example"><div><small class="tiny muted">例句 ${i+1}</small><br><strong>${wordPaint(x.en,w)}</strong><span>${esc(x.zh)}</span></div>${playBtn(x.en,'聽整句')}</div>`).join('')}</div>`}
 function wordDetails(w,expanded=true){const p=enriched(w),pieces=`<div class="detail-line"><div class="detail-label">🧩 拼字記憶拆分</div>${chunksHtml(w)}<div class="tiny muted">這是拼字記憶分段，不代表正式字根或音標。</div></div>`;
-const full=`${usage(w)}${exampleBlock(w)}${related('同義／近義詞',w.synonyms,p.synonyms)}${related('反義／對比詞',w.antonyms,p.antonyms)}${related('容易混淆的詞',w.confusing,p.confusing)}${related('同字族與派生詞',w.family,p.family)}${w.forms?`<div class="detail-line"><div class="detail-label">動詞變化 · 聽每一種形式</div><div class="chip-row">${(Array.isArray(w.forms)?w.forms:[w.forms]).map((f,i)=>`<div class="chip-word"><small>${['原形','第三人稱','過去式','過去分詞','-ing','未來式'][i]||'變化'}</small><strong>${esc(f)}</strong>${playBtn(f,'聽')}</div>`).join('')}</div></div>`:''}${usefulNote(w)?`<div class="word-note-compact">💡 ${esc(usefulNote(w))}</div>`:''}`;
+const full=`${usage(w)}${exampleBlock(w)}${related('同義／近義詞',w.synonyms,p.synonyms)}${related('反義／對比詞',w.antonyms,p.antonyms)}${related('容易混淆的詞',w.confusing,p.confusing)}${related('同字族與派生詞',w.family,p.family)}${morphCrosslinks(w)}${w.forms?`<div class="detail-line"><div class="detail-label">動詞變化 · 聽每一種形式</div><div class="chip-row">${(Array.isArray(w.forms)?w.forms:[w.forms]).map((f,i)=>`<div class="chip-word"><small>${['原形','第三人稱','過去式','過去分詞','-ing','未來式'][i]||'變化'}</small><strong>${esc(f)}</strong>${playBtn(f,'聽')}</div>`).join('')}</div></div>`:''}${usefulNote(w)?`<div class="word-note-compact">💡 ${esc(usefulNote(w))}</div>`:''}`;
 return `<div class="word-insight">${pieces}${expanded?full:`<details class="more-info"><summary>查看完整例句、常見搭配與字族</summary><div class="word-insight">${full}</div></details>`}</div>`}
 function stepNav(u,step,idx){const steps=['文法','單字','例句','小練習','手寫筆記'];return `<div class="lesson-tabs">${steps.map((s,i)=>`<button class="${step===i?'active':''} ${store.completed.includes(u)?'done':''}" data-route="learn/${u}/${i}/${i===1?idx:0}">${['01','02','03','04','05'][i]} ${s}</button>`).join('')}</div>`}
 function learnHeader(u){const s=stage(u);return `<div class="learning-header"><div><span class="eyebrow">LEVEL ${s.id} · ${esc(s.title)}</span><h1>第 ${u+1} 單元 <span class="pill ${s.color}">2 個相關文法主題 · 5 個單字</span></h1><p>兩個文法小主題 → 三個關鍵觀念 → 五個單字 → 例句和練習 → 詳細手寫筆記</p></div><div class="unit-jump no-print"><label class="tiny muted" for="unit-select">跳至單元</label><input type="number" id="unit-select" min="1" max="${UNITS}" value="${u+1}" aria-label="單元編號"><button class="mini-btn" data-unit-jump>前往</button></div></div><div class="progress-row"><span class="tiny muted">總進度 ${store.completed.length} / ${UNITS} 單元</span><span class="tiny muted">${Math.min((u+1)*5,WORDS.length)} / ${WORDS.length} 字的學習路線</span></div><div class="progress-line"><span style="width:${Math.min(100,(store.completed.length/UNITS)*100)}%"></span></div>`}
@@ -194,8 +194,64 @@ function dateOffset(days){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.ge
 function todayKey(){return dateOffset(0)}
 function dueReview(){return Object.entries(store.reviewCards||{}).filter(([key,c])=>WORD_MAP.has(key)&&c?.due<=todayKey()).map(([key])=>WORD_MAP.get(key)).slice(0,20)}
 function reviewPage(){const due=dueReview();if(!due.length)return `<header class="library-header"><span class="eyebrow">SPACED REVIEW · 間隔複習</span><h1>今天的複習花園 🌷</h1><p>今天沒有到期的單字。完成新的小單元後，單字會安排在隔天、3 天、7 天等時間重新出現。</p></header><div class="soft-recall"><strong>記住比重讀更有效</strong><p>先遮住中文自己想答案，想不起來再翻開。這是回想練習，不是考試。</p></div><div class="step-actions"><button class="btn btn-primary" data-route="learn">繼續學新單元 →</button><button class="btn btn-ghost" data-route="roots">學字根・字族 →</button></div>`;const w=due[0],key=w.word.toLowerCase(),reveal=!!state.reviewReveal[key],c=store.reviewCards[key];return `<header class="library-header"><span class="eyebrow">SPACED REVIEW · 先想答案</span><h1>今天的單字複習 <span class="pill mint">${due.length} 個待複習</span></h1><p>你之前學過的單字會按照間隔重新出現，讓記憶慢慢變穩定。</p></header><div class="review-focus"><small class="eyebrow">REMEMBER THIS WORD?</small><h2>${esc(w.word)}</h2>${playBtn(w.word,'聽單字')}<div class="word-chunks">${chunksHtml(w)}</div>${reveal?`<div class="review-reveal"><strong>${esc(w.meaning)}</strong>${exampleBlock(w,2)}<div class="review-grade"><button class="btn btn-ghost" data-review-grade="${esc(key)}:0">還不熟，明天再複習</button><button class="btn btn-primary" data-review-grade="${esc(key)}:1">我記得，增加間隔 ✓</button></div></div>`:`<button class="btn btn-mint" data-review-reveal="${esc(key)}">先在心裡說出中文 → 翻開</button>`}</div><p class="tiny muted review-hint">${c.stage===0?'第一次複習':'已成功回想 '+c.stage+' 次'} · 答對會延長下次複習的間隔；答不出來就明天再練。</p>`}
-function morphList(){const cats=[['all','全部'],['prefix','字首'],['root','字根'],['suffix','字尾'],['family','同字族']];const selected=MORPH.filter(f=>state.rootCategory==='all'||f.kind===state.rootCategory);return `<header class="library-header"><span class="eyebrow">WORD FAMILY GARDEN · 單字成群學</span><h1>字首・字尾・字族 <span class="pill mint">${MORPH.length} 組</span></h1><p>不是把單字硬拆開；這裡學的是<strong>有意義的構詞關係</strong>。先看規則，再比較 4 個相關字，最後自己回想中文。</p></header><div class="morph-toolbar" role="group" aria-label="字族分類">${cats.map(([id,txt])=>`<button class="morph-filter ${state.rootCategory===id?'active':''}" data-root-filter="${id}">${txt}</button>`).join('')}</div><div class="morph-grid">${selected.map(f=>{const i=MORPH.indexOf(f);return `<button class="morph-card kind-${f.kind}" data-route="root/${i}"><small>${f.kind==='prefix'?'字首 PREFIX':f.kind==='root'?'字根 ROOT':f.kind==='suffix'?'字尾 SUFFIX':'同字族 WORD FAMILY'}</small><h2>${esc(f.key)}</h2><p>${esc(f.meaning)}</p><span>${f.words.slice(0,3).map(x=>esc(x.en)).join(' · ')}</span><b>開始探索 ↗</b></button>`}).join('')}</div><div class="soft-recall"><strong>字根與拼字拆分不一樣</strong><p>例如 can / cel / la / tion 是拼字記憶分段；-tion 則是常見名詞字尾。只有有詞源或構詞依據，才當作真正的字根、字首或字尾教。</p></div>`}
-function morphDetail(r){const i=clip(Number(r[1]||0),0,MORPH.length-1),f=MORPH[i];if(!f)return morphList();const cards=f.words.map((w,j)=>{const key=`${i}:${j}`;return `<div class="morph-word"><div class="morph-word-top"><b>${esc(w.en)}</b>${playBtn(w.en,'聽單字')}</div>${state.rootRevealed[key]?`<p class="morph-translation">${esc(w.zh)}</p>`:`<button class="morph-reveal" data-root-reveal="${key}">先猜意思 → 翻開中文</button>`}${WORD_MAP.has(w.en.toLowerCase())?`<button class="morph-inline-link" data-route="word/${encodeURIComponent(w.en)}">查看單字詳解 ↗</button>`:''}</div>`}).join('');const opts=f.words.slice().sort((a,b)=>a.en.localeCompare(b.en)),qid=`${i}`,answer=opts.findIndex(w=>w.en===f.words[1].en);return `<header class="library-header"><span class="eyebrow">${f.kind==='prefix'?'字首 PREFIX':f.kind==='root'?'字根 ROOT':f.kind==='suffix'?'字尾 SUFFIX':'WORD FAMILY'} · 第 ${i+1} 組</span><h1>${esc(f.key)} <span class="pill peach">${esc(f.meaning)}</span></h1><p>${esc(f.description)}</p></header><div class="morph-lesson"><div class="morph-summary"><b>今天的發現</b><p>${esc(f.description)}</p><p>每次先學這 4 個字，不需要一次把全部 39 組背完。</p></div><div class="morph-word-grid">${cards}</div><div class="morph-example"><small>情境例句 · 觀察重點色塊</small><div class="example-row highlighted-example"><div><strong>${paint(f.example.en,f.focus)}</strong><span>${esc(f.example.zh)}</span></div>${playBtn(f.example.en,'聽整句')}</div></div><section class="morph-practice"><span class="pill yellow">回想練習</span><h3>「${esc(f.words[1].zh)}」對應哪個英文？</h3><div class="morph-options">${opts.map((w,j)=>`<button class="morph-answer ${state.rootQuiz[qid]!==undefined?(j===answer?'correct':j===state.rootQuiz[qid]?'incorrect':''):''}" data-root-answer="${i}:${j}">${esc(w.en)}</button>`).join('')}</div>${state.rootQuiz[qid]!==undefined?`<p class="morph-feedback">${state.rootQuiz[qid]===answer?'答對了！':'再記住一次！'} ${esc(f.words[1].en)} = ${esc(f.words[1].zh)}</p>`:''}</section></div><div class="step-actions"><button class="btn btn-ghost" data-route="roots">← 字族總覽</button><button class="btn btn-primary" data-route="root/${(i+1)%MORPH.length}">下一組 →</button></div>`}
+// 第九版：字根、字族與全詞庫分類，分批瀏覽避免一次學習過量。
+const MORPH_TYPES={prefix:'字首 PREFIX',root:'字根 ROOT',suffix:'字尾 SUFFIX',family:'同字族 WORD FAMILY',topic:'主題整理 TOPIC'};
+const MORPH_BY_WORD=new Map();
+MORPH.forEach((g,i)=>g.words.forEach(w=>{
+ const k=w.en.toLowerCase();if(!MORPH_BY_WORD.has(k))MORPH_BY_WORD.set(k,[]);MORPH_BY_WORD.get(k).push(i);
+}));
+const MORPH_COVERED=new Set([...MORPH_BY_WORD].filter(([word,ids])=>ids.some(id=>MORPH[id].kind!=='topic')).map(([word])=>word));
+function morphCrosslinks(word){
+ const items=(MORPH_BY_WORD.get(String(word.word||'').toLowerCase())||[]);
+ const structural=items.filter(i=>MORPH[i].kind!=='topic');const thematic=items.filter(i=>MORPH[i].kind==='topic');
+ return `<div class="detail-line morph-word-links"><div class="detail-label">🧬 我的字根／字族分類</div><div class="chip-row">${structural.slice(0,8).map(i=>`<button class="morph-jump-chip" data-route="root/${i}">${esc(MORPH[i].key)} <span>${MORPH[i].words.length} 字</span></button>`).join('')}${thematic.slice(0,1).map(i=>`<button class="morph-jump-chip theme" data-route="root/${i}">${esc(MORPH[i].key)} <span>主題</span></button>`).join('')}</div>${!structural.length?'<p class="tiny muted">目前尚無足夠依據連到特定字根；已先依情境主題收錄，不會硬湊相似字形。</p>':''}</div>`;
+}
+function morphList(){
+ const cats=[['all','全部'],['prefix','字首'],['root','字根'],['suffix','字尾'],['family','同字族'],['topic','主題歸檔']];
+ const query=sub(state.rootSearch).toLowerCase();
+ const selected=MORPH.map((g,i)=>({g,i})).filter(({g})=>(state.rootCategory==='all'||g.kind===state.rootCategory)&&(!query||`${g.key} ${g.meaning} ${g.description}`.toLowerCase().includes(query)||g.words.some(w=>w.en.toLowerCase().includes(query)||w.zh.includes(query))));
+ const seen=state.rootGroupShown||24;
+ const visible=selected.slice(0,seen);
+ const stats=`${MORPH_COVERED.size.toLocaleString('zh-TW')} 筆詞彙具有可比對的構詞／字族關係，其他詞彙依主題歸檔`;
+ return `<header class="library-header"><span class="eyebrow">WORD FAMILY GARDEN · 累積學習</span><h1>字根・字族圖鑑 <span class="pill mint">${MORPH.length} 組</span></h1><p>把現有 <strong>${WORDS.length.toLocaleString('zh-TW')} 個字詞</strong>整理成可搜尋的分類，每組不再只有 4 個示範字；依真正收錄數量完整列出，學習時再分批看。</p></header>
+ <div class="morph-stats"><div><strong>${WORDS.length.toLocaleString('zh-TW')} <small>/ ${WORDS.length.toLocaleString('zh-TW')}</small></strong><span>已進入分類索引的字詞</span></div><div><strong>${MORPH_COVERED.size.toLocaleString('zh-TW')}</strong><span>具有構詞／字族對應</span></div><div><strong>${MORPH.filter(g=>g.kind==='family').length}</strong><span>同字族分組</span></div></div>
+ <label class="morph-search-label" for="morph-search">🔎 搜尋字根、字族或任一單字</label><input id="morph-search" class="morph-search" type="search" placeholder="例如：apply、-tion、管理、report" value="${esc(state.rootSearch)}" autocomplete="off">
+ <div class="morph-toolbar" role="group" aria-label="字族分類">${cats.map(([id,txt])=>`<button class="morph-filter ${state.rootCategory===id?'active':''}" data-root-filter="${id}">${txt} <span>${id==='all'?MORPH.length:MORPH.filter(g=>g.kind===id).length}</span></button>`).join('')}</div>
+ <div class="morph-result-note">${query?`找到 <b>${selected.length}</b> 組與「${esc(query)}」相關的分類`:`共 <b>${selected.length}</b> 組，先顯示 ${visible.length} 組`} · 點入後可查看該組所有收錄字詞</div>
+ ${selected.length?`<div class="morph-grid">${visible.map(({g,i})=>`<button class="morph-card kind-${g.kind}" data-route="root/${i}"><small>${MORPH_TYPES[g.kind]}</small><h2>${esc(g.key)}</h2><p>${esc(g.meaning)}</p><span>${g.words.slice(0,3).map(x=>esc(x.en)).join(' · ')||'課外補充詞彙'}</span><b>${g.words.length} 個詞庫字詞 · 查看全部 ↗</b></button>`).join('')}</div>`:'<div class="soft-recall"><strong>沒有符合的字族</strong><p>可以換個拼字、中文意思搜尋，或使用「主題歸檔」瀏覽所有單字。</p></div>'}
+ ${visible.length<selected.length?`<div class="morph-more-wrap"><button class="btn btn-primary" data-root-more-groups>再看 ${Math.min(24,selected.length-visible.length)} 組分類 ↓</button></div>`:''}
+ <div class="soft-recall"><strong>分類原則：不能只看字母長得像</strong><p>${stats}。字根是構詞意義，字族是相關詞形；「主題歸檔」只是將原有單字整理在一起，不代表同一字根。遇到尚未確認的構詞關係，先按情境記憶。</p></div>`;
+}
+function morphDetail(r){
+ const i=Number(r[1]);const f=Number.isInteger(i)?MORPH[i]:null;if(!f)return morphList();
+ const all=f.words||[];
+ const query=sub(state.rootWordSearch[i]||'').toLowerCase();
+ const filtered=all.filter(w=>!query||w.en.toLowerCase().includes(query)||w.zh.includes(query));
+ const shown=state.rootWordShown[i]||8;
+ const display=filtered.slice(0,shown);
+ const cards=display.map((w,j)=>{
+  const key=`${i}:${w.en.toLowerCase()}`;
+  return `<div class="morph-word"><div class="morph-word-top"><b>${esc(w.en)}</b>${playBtn(w.en,'聽單字')}</div><small class="tiny muted">${esc(w.pos||'')}</small>${state.rootRevealed[key]?`<p class="morph-translation">${esc(w.zh)}</p>`:`<button class="morph-reveal" data-root-reveal="${esc(key)}">先猜意思 → 翻開中文</button>`}<button class="morph-inline-link" data-route="word/${encodeURIComponent(w.en)}">查看單字詳解 ↗</button></div>`;
+ }).join('');
+ const extra=(f.extras||[]).filter(w=>!query||w.en.toLowerCase().includes(query)||w.zh.includes(query)).slice(0,6);
+ const lessonExample=f.example||(function(){for(const w of all.slice(0,40)){const record=WORD_MAP.get(w.en.toLowerCase());if(record){const ex=examplesFor(record)[0];if(ex)return {...ex,focus:w.en}}}return null})();
+ const sample=filtered.slice(0,4);
+ const answer=sample.length>=2?sample[1]:sample[0];
+ const opts=sample.slice().sort((a,b)=>a.en.localeCompare(b.en));
+ const qid=`${i}:${query}`;
+ const chosen=state.rootQuiz[qid];
+ return `<header class="library-header"><span class="eyebrow">${MORPH_TYPES[f.kind]} · 第 ${i+1} 組</span><h1>${esc(f.key)} <span class="pill peach">${esc(f.meaning)}</span></h1><p>${esc(f.description)}</p></header>
+ <div class="morph-lesson"><div class="morph-summary"><b>這組目前收錄 ${all.length} 個詞庫字詞</b><p>${f.kind==='topic'?'這是方便找字的主題分類，不代表每個字都具有共同字根。':'每一組都可以繼續往下展開；每次先學少量，學完再看後面的字。'}</p><p>可從任何單字進入完整解釋、例句、發音與筆記。</p></div>
+ <label class="morph-search-label" for="morph-detail-search">搜尋這一組的單字或中文</label><input id="morph-detail-search" data-morph-group="${i}" class="morph-search" type="search" placeholder="這組共有 ${all.length} 個，輸入英文或中文篩選" value="${esc(state.rootWordSearch[i]||'')}" autocomplete="off">
+ <p class="morph-result-note">${query?`找到 ${filtered.length} 個字`:`已顯示 ${display.length} / ${all.length} 個字`} ${query?'': '· 想一次認識更多，可往下展開'}</p>
+ ${display.length?`<div class="morph-word-grid">${cards}</div>`:'<div class="soft-recall"><p>這組沒有符合搜尋的已收錄單字。</p></div>'}
+ ${shown<filtered.length?`<div class="morph-more-wrap"><button class="btn btn-primary" data-root-more="${i}">再看 ${Math.min(8,filtered.length-shown)} 個字 ↓</button><button class="btn btn-ghost" data-root-all="${i}">顯示這組全部 ${filtered.length} 個字</button></div>`:''}
+ ${extra.length?`<details class="morph-extras"><summary>延伸學習 · ${extra.length} 個詞庫外例字</summary><p>以下是原先教材列出的補充詞，尚未列入 3,000 筆詞庫的正式學習進度。</p><div class="morph-word-grid">${extra.map(w=>`<div class="morph-word"><div class="morph-word-top"><b>${esc(w.en)}</b>${playBtn(w.en,'聽單字')}</div><p class="morph-translation">${esc(w.zh)}</p></div>`).join('')}</div></details>`:''}
+ ${lessonExample?`<div class="morph-example"><small>情境例句 · 觀察重點色塊</small><div class="example-row highlighted-example"><div><strong>${paint(lessonExample.en,f.focus||lessonExample.focus||sample[0]?.en||'')}</strong><span>${esc(lessonExample.zh)}</span></div>${playBtn(lessonExample.en,'聽整句')}</div></div>`:''}
+ ${sample.length>=3?`<section class="morph-practice"><span class="pill yellow">回想練習</span><h3>「${esc(answer.zh)}」對應哪個英文？</h3><div class="morph-options">${opts.map((w,j)=>`<button class="morph-answer ${chosen!==undefined?(w.en===answer.en?'correct':j===chosen?'incorrect':''):''}" data-root-answer="${esc(qid)}:${j}">${esc(w.en)}</button>`).join('')}</div>${chosen!==undefined?`<p class="morph-feedback">${opts[chosen]?.en===answer.en?'答對了！':'再記住一次！'} ${esc(answer.en)} = ${esc(answer.zh)}</p>`:''}</section>`:''}
+ </div><div class="step-actions"><button class="btn btn-ghost" data-route="roots">← 字族總覽</button><button class="btn btn-primary" data-route="root/${(i+1)%MORPH.length}">下一組 →</button></div>`;
+}
+
 function render(){const r=route();const top=r[0];let html;switch(top){case'learn':html=learnPage(r.length===1?(store.lastLearn||'learn/0/0').split('/'):r);break;case'review':html=reviewPage();break;case'roots':html=morphList();break;case'root':html=morphDetail(r);break;case'words':html=wordsPage();break;case'word':html=wordPage(r);break;case'grammar':html=grammarPage(r);break;case'notes':html=notesPage(r);break;case'papers':html=papersPage();break;case'paper':html=paperPage(r);break;default:html=homePage()}PAGE.innerHTML=html;document.querySelectorAll('[data-nav]').forEach(x=>x.classList.toggle('active',x.dataset.nav===(top==='word'?'words':top==='root'?'roots':top==='paper'?'papers':top)));const bar=document.getElementById('history-bar');bar.hidden=top==='home';document.getElementById('crumbs').textContent=({'learn':'學習進度','word':'單字詳解','review':'間隔複習','roots':'字根字族','root':'字根字族練習','words':'單字庫','grammar':'文法庫','notes':'筆記','papers':'練習卷','paper':'線上練習'}[top]||'');document.title='小步學英文｜'+(bar.hidden?'首頁':document.getElementById('crumbs').textContent);}
 function historyChanged(){const newHash=location.hash||'#home';if(newHash!==oldHash){if(historyTrail.length&&newHash===historyTrail[historyTrail.length-1])historyTrail.pop();else historyTrail.push(oldHash);oldHash=newHash}render();window.scrollTo({top:0,behavior:'instant'})}
 window.addEventListener('hashchange',historyChanged);
@@ -204,9 +260,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('button,[data-rou
 if(b.dataset.speak!==undefined){play(b.dataset.speak);return}
 if(b.dataset.reviewReveal!==undefined){state.reviewReveal[b.dataset.reviewReveal]=true;render();return}
 if(b.dataset.reviewGrade!==undefined){const [key,grade]=b.dataset.reviewGrade.split(':');const c=store.reviewCards[key];if(c){const yes=grade==='1';c.stage=yes?Math.min((c.stage||0)+1,5):0;c.due=dateOffset(yes?[1,3,7,14,30,45][c.stage-1]:1);delete state.reviewReveal[key];save();render()}return}
-if(b.dataset.rootFilter!==undefined){state.rootCategory=b.dataset.rootFilter;render();return}
+if(b.dataset.rootFilter!==undefined){state.rootCategory=b.dataset.rootFilter;state.rootGroupShown=24;render();return}
+if(b.hasAttribute('data-root-more-groups')){state.rootGroupShown+=24;render();return}
+if(b.dataset.rootMore!==undefined){const n=b.dataset.rootMore;state.rootWordShown[n]=(state.rootWordShown[n]||8)+8;render();return}
+if(b.dataset.rootAll!==undefined){const n=b.dataset.rootAll;state.rootWordShown[n]=9999;render();return}
 if(b.dataset.rootReveal!==undefined){state.rootRevealed[b.dataset.rootReveal]=true;render();return}
-if(b.dataset.rootAnswer!==undefined){const [i,j]=b.dataset.rootAnswer.split(':');state.rootQuiz[i]=Number(j);render();return}
+if(b.dataset.rootAnswer!==undefined){const values=b.dataset.rootAnswer.split(':');const j=Number(values.pop());state.rootQuiz[values.join(':')]=j;render();return}
 if(b.dataset.route){go(b.dataset.route);return}
 if(b.hasAttribute('data-back')||b.id==='back-btn'){back();return}
 if(b.dataset.reveal!==undefined){state.revealed[b.dataset.reveal]=true;render();return}
@@ -222,7 +281,7 @@ if(b.hasAttribute('data-more-words')){state.wordShown+=30;render();return}
 if(b.id==='audio-settings-toggle'){let a=document.getElementById('audio-settings');a.hidden=!a.hidden;return}
 if(b.id==='stop-speech'){window.speechSynthesis?.cancel();document.getElementById('speech-status').textContent='已停止';return}
 });
-document.addEventListener('input',e=>{let x=e.target;if(x.id==='word-search'){let pos=x.selectionStart;state.wordSearch=x.value;state.wordShown=30;render();const n=document.getElementById('word-search');n.focus();n.setSelectionRange(pos,pos)}else if(x.id==='grammar-search'){let pos=x.selectionStart;state.grammarSearch=x.value;render();const n=document.getElementById('grammar-search');n.focus();n.setSelectionRange(pos,pos)}});
+document.addEventListener('input',e=>{let x=e.target;if(x.id==='morph-search'){let pos=x.selectionStart;state.rootSearch=x.value;state.rootGroupShown=24;render();const n=document.getElementById('morph-search');n?.focus();n?.setSelectionRange(pos,pos)}else if(x.id==='morph-detail-search'){let pos=x.selectionStart;const i=x.dataset.morphGroup;state.rootWordSearch[i]=x.value;state.rootWordShown[i]=8;render();const n=document.getElementById('morph-detail-search');n?.focus();n?.setSelectionRange(pos,pos)}else if(x.id==='word-search'){let pos=x.selectionStart;state.wordSearch=x.value;state.wordShown=30;render();const n=document.getElementById('word-search');n.focus();n.setSelectionRange(pos,pos)}else if(x.id==='grammar-search'){let pos=x.selectionStart;state.grammarSearch=x.value;render();const n=document.getElementById('grammar-search');n.focus();n.setSelectionRange(pos,pos)}});
 document.addEventListener('change',e=>{if(e.target.id==='category-search'){state.wordCategory=e.target.value;state.wordShown=30;render()}});
 render();
 })();

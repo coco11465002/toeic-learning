@@ -293,3 +293,31 @@ p{color:#696478}
 @media(max-width:660px){.home-review-strip{flex-direction:column;align-items:stretch;padding:15px}.review-focus{padding:24px 14px}.review-focus h2{font-size:35px}.review-grade .btn{width:100%}}
 .morph-card.kind-root{background:#f6efff;border-color:#e2c9f9}
 .morph-card.kind-root small{color:#9c75b3}
+/* 第九版：完整字根／字族圖鑑，分批閱讀、全詞庫搜尋。 */
+.morph-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:21px 0 23px}
+.morph-stats>div{background:linear-gradient(145deg,#fff3e9,#fffaf3);border:1px solid #f3d6c9;border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:3px}
+.morph-stats>div:nth-child(2){background:linear-gradient(145deg,#e9f9ed,#f8fff4);border-color:#d0e9d9}
+.morph-stats>div:nth-child(3){background:linear-gradient(145deg,#f0ebff,#fcf7ff);border-color:#e3d6f3}
+.morph-stats strong{font-family:'Fredoka','Nunito',sans-serif;font-size:26px;color:#67476e}
+.morph-stats strong small{font-size:13px;color:#b6a4b6}
+.morph-stats span{font-size:12px;font-weight:750;color:#766e7b}
+.morph-search-label{display:block;font-size:13px;font-weight:850;color:#70547e;margin:10px 0 7px}
+.morph-search{box-sizing:border-box;display:block;width:100%;min-height:48px;border:2px solid #daceee;background:#fff;color:#5c4e70;border-radius:15px;padding:11px 15px;font-size:15px;outline-offset:4px}
+.morph-search:focus{border-color:#aa84d8;box-shadow:0 0 0 4px #f2e6ff}
+.morph-filter span{opacity:.72;font-weight:700;margin-left:5px;font-size:11px}
+.morph-result-note{font-size:13px;color:#82768e;line-height:1.8;margin:14px 0 16px}
+.morph-card.kind-topic{background:#fff0f2;border-color:#f2d3df}
+.morph-card.kind-topic h2{font-size:24px}
+.morph-more-wrap{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;margin:22px auto}
+.morph-word>small{font-weight:700}
+.morph-extras{background:#f7f2ff;border:1px dashed #cfbee9;border-radius:18px;padding:15px 20px;margin-top:19px}
+.morph-extras>summary{font-weight:850;color:#665785;cursor:pointer;padding:5px}
+.morph-extras>p{font-size:12px;color:#81738c;line-height:1.7}
+.morph-extras>.morph-word-grid{margin-top:12px}
+.morph-jump-chip{border:1.5px solid #c5b5ea;border-radius:12px;background:#f5efff;color:#6f558a;cursor:pointer;padding:8px 11px;display:inline-flex;gap:8px;align-items:center;font-weight:800;overflow-wrap:anywhere}
+.morph-jump-chip>span{font-size:11px;color:#907bab}
+.morph-jump-chip.theme{border-color:#efbcb2;background:#fff3ea;color:#90605f}
+.morph-jump-chip.theme>span{color:#bf8883}
+.morph-word-links .chip-row{display:flex;flex-wrap:wrap;gap:9px}
+@media(max-width:700px){.morph-stats{grid-template-columns:1fr}.morph-stats>div{padding:13px 17px;flex-direction:row;gap:14px;align-items:center}.morph-stats strong{font-size:24px}.morph-card.kind-topic h2{font-size:21px}}
+@media print{.morph-search,.morph-search-label,.morph-more-wrap,.morph-jump-chip{display:none!important}}
