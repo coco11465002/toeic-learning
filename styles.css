@@ -321,3 +321,29 @@ p{color:#696478}
 .morph-word-links .chip-row{display:flex;flex-wrap:wrap;gap:9px}
 @media(max-width:700px){.morph-stats{grid-template-columns:1fr}.morph-stats>div{padding:13px 17px;flex-direction:row;gap:14px;align-items:center}.morph-stats strong{font-size:24px}.morph-card.kind-topic h2{font-size:21px}}
 @media print{.morph-search,.morph-search-label,.morph-more-wrap,.morph-jump-chip{display:none!important}}
+
+/* 第十版：完整字根字族歸屬與「今天的發現」 */
+.morph-membership{margin:18px 0;background:linear-gradient(145deg,#fffaf2,#f7f1ff 70%,#edfcf7);border:1.5px solid #e9d7e9;border-radius:20px;padding:17px 18px;text-align:left;box-shadow:0 5px 14px rgba(102,74,132,.05)}
+.morph-membership-heading{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.morph-membership-heading strong{color:#664f88;font-size:16px;font-weight:900}
+.morph-membership-heading>span{color:#8b729d;font-size:12px;font-weight:750}
+.morph-assoc-list{display:flex;flex-wrap:wrap;gap:9px}
+.morph-assoc-chip{display:inline-flex;align-items:center;flex-wrap:wrap;gap:7px;text-align:left;max-width:100%;background:#f2eaff;border:1px solid #d8c6f6;color:#645087;padding:8px 11px;border-radius:13px;font-size:13px;line-height:1.5;transition:transform .15s}
+.morph-assoc-chip:hover{transform:translateY(-2px);background:#e7dcff}
+.morph-assoc-chip strong{overflow-wrap:anywhere;font-size:14px}
+.morph-assoc-chip .assoc-type{background:#fff9;border-radius:8px;padding:2px 5px;font-size:11px}
+.morph-assoc-chip .assoc-size{color:#9275a7;font-size:11px;white-space:nowrap}
+.morph-assoc-chip.kind-topic{background:#ffefe6;border-color:#eac5bb;color:#9c635a}
+.morph-assoc-chip.kind-topic:hover{background:#ffe4d3}
+.morph-assoc-chip.kind-topic .assoc-size{color:#b57c73}
+.morph-membership-note{margin:11px 0 0;font-size:12px;color:#786f8a;line-height:1.65}
+.word-focus-box .morph-membership{max-width:690px;margin:17px auto}
+.word-detail-full>.morph-membership{margin-top:13px}
+.review-focus .morph-membership{max-width:670px;margin:18px auto}
+.vocab-morph-label{display:block;border-radius:9px;padding:5px 8px;background:#fff1e8;color:#8d6380;font-size:11px;font-weight:800;margin-top:5px;text-align:left;overflow-wrap:anywhere}
+.hand-word-class{background:#f1eaff;border-left:3px solid #9b85cc;padding:6px 9px;font-size:12px;color:#765d92;margin:8px 0}
+.morph-summary-kicker{display:block;font-size:12px;font-weight:900;letter-spacing:1px;color:#9b72ac;margin-bottom:5px}
+.morph-practice-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.morph-practice .morph-more-wrap{margin:16px 0 0;justify-content:flex-end}
+@media(max-width:660px){.morph-membership{padding:13px 11px}.morph-membership-heading strong{font-size:14px}.morph-assoc-chip{font-size:12px;padding:7px 9px}.morph-assoc-chip strong{font-size:12px}}
+@media print{.morph-assoc-chip{background:#f2edf8!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
