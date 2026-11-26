@@ -176,3 +176,44 @@ p{color:#696478}
 }
 
 @page{size:A4;margin:8mm}
+
+/* v7: richer, vertical student notebook and connected grammar subjects */
+.topic-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+.topic-tag{border:1.5px solid #eadade;border-radius:17px;padding:18px 17px;min-width:0}
+.topic-tag.coral{background:#fff0e6}.topic-tag.mint{background:#eaf9f1}
+.topic-tag small{font-size:11px;letter-spacing:.8px;display:block;color:#b76f7d;font-weight:800}
+.topic-tag strong{display:block;font-size:18px;line-height:1.45;color:#615376;margin:6px 0}
+.topic-tag p{font-size:13px;line-height:1.7;margin:7px 0 14px;color:#6d6878}
+.unit-learning-note{padding:12px 15px;background:#fffaf0;border-left:4px solid #e6c277;border-radius:10px;color:#806659;font-size:13px;margin:14px 0}
+.learning-mini-heading{font-size:17px;margin:24px 0 12px;color:#65518e}
+.notebook-detailed .notebook-sheet{padding-bottom:32px}
+.notebook-detailed .notebook-layout{grid-template-columns:105px minmax(0,1fr)}
+.notebook-detailed .scribble-heading{margin-top:24px;font-size:16px}
+.notebook-detailed .notes-main{font-size:13px}
+.notebook-detailed .scribble-rule{margin:12px 0 17px}
+.note-topic-label{display:block;color:#9377a4;font-size:10px;font-weight:750;line-height:1.6;margin-bottom:3px}
+.notebook-plus{color:#eab36d;padding:0 5px}
+.grammar-explain-block{margin:10px 0 14px;padding:13px 17px 10px;background:#fff8ef;border:1px solid #f0dac9;border-radius:13px;box-shadow:2px 2px 0 #fbe7d6}
+.grammar-explain-block:nth-child(even){background:#f1f9fc;border-color:#d8e9f1}
+.grammar-explain-block strong{color:#6f5486;font-size:14px;line-height:1.7}
+.grammar-explain-block p{font-size:13px;line-height:1.9;color:#645b65;margin:8px 0}
+.note-topic-pill{display:inline-block;background:#ffdfbf;border-radius:6px;padding:1px 7px;font-size:11px;color:#a35c73;margin-right:3px}
+.grammar-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 16px}
+.grammar-compare>div{border:1px solid #e9dacd;border-radius:11px;padding:13px;background:#fff9ee;min-width:0;break-inside:avoid}
+.grammar-compare>div:nth-child(2){background:#f2f9f0;border-color:#d2e3d6}
+.grammar-compare small{font-size:11px;color:#9a658a;font-weight:900;line-height:1.65}
+.grammar-compare p{margin:7px 0 0;font-size:12px;line-height:1.85}
+.note-translation{margin:13px 0 15px;break-inside:avoid}
+.note-translation>b{display:block;font-weight:650;font-size:13px;color:#75616d;line-height:1.8}
+.note-write-lines{display:grid;gap:11px;margin-top:10px;width:100%}
+.note-write-lines i{display:block;height:17px;border-bottom:1.5px dashed #c8b9cb}
+.note-free-lines{margin:12px 0 20px;gap:14px}
+.notebook-detailed .hand-word{padding:12px 0 18px;margin-bottom:3px;break-inside:avoid}
+.notebook-detailed .hand-word-main{font-size:13px}
+.notebook-detailed .hand-word-usage{font-size:12px;line-height:1.9;margin-top:7px}
+.notebook-detailed .hand-word-split{font-size:12px;padding:4px 9px;margin-top:7px}
+.notebook-detailed .hand-word-meaning{font-size:14px;margin:4px 0}
+.notebook-detailed .write-my-own{margin-top:12px;font-size:12px}
+@media(max-width:660px){.topic-pair{grid-template-columns:1fr}.grammar-compare{grid-template-columns:1fr}.notebook-detailed .notebook-layout{grid-template-columns:62px minmax(0,1fr)}.notebook-detailed .notes-main{padding-left:10px}.notebook-detailed .notebook-sheet{padding-right:12px}.grammar-explain-block{padding:10px 11px}.notebook-detailed .scribble-heading{font-size:14px}}
+@media(max-width:380px){.notebook-detailed .notebook-layout{grid-template-columns:45px minmax(0,1fr)}.notebook-detailed .cue-column{font-size:9px}}
+@media print{.notebook-detailed .notebook-sheet{min-height:0!important;height:auto!important;overflow:visible!important;break-inside:auto!important;padding:9mm 8mm 7mm 11mm!important}.notebook-detailed .notebook-sheet:first-child{break-after:page!important}.notebook-detailed .hand-word,.notebook-detailed .grammar-explain-block,.notebook-detailed .scribble-rule{break-inside:avoid!important}.notebook-detailed .notebook-layout{grid-template-columns:20mm minmax(0,1fr)}.notebook-detailed .sheet-header{break-after:avoid}}

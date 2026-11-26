@@ -37,7 +37,23 @@ const icon='<svg class="play-icon" viewBox="0 0 24 24" width="18" height="18" fi
 return `<button class="play" type="button" data-speak="${esc(s)}" aria-label="播放 ${esc(s)}" title="聽發音：${esc(s)}">${icon}<span class="play-label">${esc(label)}</span></button>`;
 }
 function stage(u){return u<60?{id:1,title:'從零開始',desc:'認識句子、詞性與每天會遇到的英文',color:'mint'}:u<180?{id:2,title:'基礎扎根',desc:'時態、代名詞、文法與常用字',color:'blue'}:{id:3,title:'生活與職場應用',desc:'把單字和文法用在完整句子',color:'peach'}}
-function ruleFor(u){const idx=u<LESSONS.length*2?Math.floor(u/2):Math.floor((u-LESSONS.length*2)/3)%LESSONS.length;const lesson=LESSONS[idx]||LESSONS[0];const list=lesson.rules||[];const start=u<LESSONS.length*2?u%2*2:((u-LESSONS.length*2)%3)%Math.max(1,list.length);return {lesson,subset:list.slice(start,start+2).length?list.slice(start,start+2):list.slice(0,2),part:start,review:u>=LESSONS.length*2}}
+// Each short unit connects two related grammar themes, with three distinct takeaways.
+// The pairing stays stable for old saved units; localStorage progress is preserved.
+const PARTNER_TOPICS=[1,0,3,2,5,4,20,21,29,34,32,25,37,51,38,52,48,49,42,44,6,7,5,24,23,26,25,0,29,28,7,32,10,32,9,43,7,12,14,40,39,12,18,35,19,46,45,45,16,17,12,13,15,53,26,5,58,14,56];
+function ruleFor(u){
+ const review=u>=LESSONS.length*2;
+ const idx=!review?Math.floor(u/2):Math.floor((u-LESSONS.length*2)/3)%LESSONS.length;
+ const lesson=LESSONS[idx]||LESSONS[0];
+ const partner=LESSONS[PARTNER_TOPICS[idx]]||LESSONS[(idx+1)%LESSONS.length];
+ const mainRules=lesson.rules||[],sideRules=partner.rules||[];
+ const round=!review?u%2:(u-LESSONS.length*2)%3;
+ const start=round*2;
+ const main=[0,1].map(k=>mainRules[(start+k)%mainRules.length]).filter(Boolean);
+ const side=sideRules.length?sideRules[(round+Math.floor(u/2))%sideRules.length]:null;
+ const concepts=[...main.map(x=>({title:x[0],detail:x[1],topic:lesson.title})),...(side?[{title:side[0],detail:side[1],topic:partner.title}]:[])];
+ const examples=[...(lesson.examples||[]).slice(0,2).map(x=>({...{en:x[0],zh:x[1]},topic:lesson.title})),...(partner.examples||[]).slice(0,2).map(x=>({en:x[0],zh:x[1],topic:partner.title}))];
+ return {lesson,partner,subset:main,concepts,examples,review,part:round};
+}
 function getWords(u){return priority.slice(u*5,(u+1)*5)}
 function spl(w){let s=w.split||w.word;if(!s||s.toLowerCase()===w.word.toLowerCase())return [w.word];const p=s.split(/\s*[/|•]\s*/).filter(Boolean);return p.length? p:[w.word]}
 function chunksHtml(w){const p=spl(w);if(p.length===1)return `<div class="word-chunks"><span class="chunk">${esc(w.word)}</span><span class="tiny muted">單音節／保留整字</span></div>`;return `<div class="word-chunks">${p.map((x,i)=>`${i?'<span class="chunk-separator">/</span>':''}<span class="chunk">${esc(x)}</span>`).join('')}</div>`}
@@ -51,68 +67,94 @@ function wordDetails(w,expanded=true){const pieces=`<div class="detail-line"><di
 const full=`${usage(w)}${exampleBlock(w)}${related('同義／近義詞',w.synonyms)}${related('反義／對比詞',w.antonyms)}${related('容易混淆的詞',w.confusing)}${related('字族與變化',w.family)}${w.forms?`<div class="detail-line"><div class="detail-label">動詞變化 · 看每一種形式</div><div class="chip-row">${(Array.isArray(w.forms)?w.forms:[w.forms]).map((f,i)=>`<div class="chip-word"><small>${['原形','第三人稱','過去式','過去分詞','-ing','未來式'][i]||'變化'}</small><strong>${esc(f)}</strong>${playBtn(f,'聽')}</div>`).join('')}</div></div>`:''}${w.note?`<div class="word-note-compact">💡 ${esc(w.note)}</div>`:''}`;
 return `<div class="word-insight">${pieces}${expanded?full:`<details class="more-info"><summary>查看更多：搭配、詞族、同反義詞、例句</summary><div class="word-insight">${full||'<p class="muted">相關資料持續校訂中。</p>'}</div></details>`}</div>`}
 function stepNav(u,step,idx){const steps=['文法','單字','例句','小練習','手寫筆記'];return `<div class="lesson-tabs">${steps.map((s,i)=>`<button class="${step===i?'active':''} ${store.completed.includes(u)?'done':''}" data-route="learn/${u}/${i}/${i===1?idx:0}">${['01','02','03','04','05'][i]} ${s}</button>`).join('')}</div>`}
-function learnHeader(u){const s=stage(u);return `<div class="learning-header"><div><span class="eyebrow">LEVEL ${s.id} · ${esc(s.title)}</span><h1>第 ${u+1} 單元 <span class="pill ${s.color}">每次 5 個新單字</span></h1><p>學一點文法 → 練例句 → 記單字 → 馬上試試看</p></div><div class="unit-jump no-print"><label class="tiny muted" for="unit-select">跳至單元</label><input type="number" id="unit-select" min="1" max="${UNITS}" value="${u+1}" aria-label="單元編號"><button class="mini-btn" data-unit-jump>前往</button></div></div><div class="progress-row"><span class="tiny muted">總進度 ${store.completed.length} / ${UNITS} 單元</span><span class="tiny muted">${Math.min((u+1)*5,WORDS.length)} / ${WORDS.length} 字的學習路線</span></div><div class="progress-line"><span style="width:${Math.min(100,(store.completed.length/UNITS)*100)}%"></span></div>`}
-function learnGrammar(u){const {lesson,subset,review}=ruleFor(u);const examples=(lesson.examples||[]).slice(0,2);return `<div class="step-top"><div><span class="pill blue">${review?'學過的文法再運用':'今天的文法'}</span><h2>${esc(lesson.title)}</h2></div><button class="mini-btn" data-route="grammar/${LESSONS.indexOf(lesson)}">完整文法課 ↗</button></div><p>${esc(lesson.subtitle||lesson.paragraphs?.[0]||'')}</p>${subset.map(([name,detail],i)=>`<div class="rule-note"><span class="tiny muted">小重點 ${i+1}</span><strong>${esc(name)}</strong><p>${esc(detail)}</p></div>`).join('')}${examples.map(([en,zh])=>`<div class="example-row"><div><strong>${esc(en)}</strong><span>${esc(zh)}</span></div>${playBtn(en,'聽這句')}</div>`).join('')}<div class="step-actions"><button class="btn btn-ghost" data-route="home">回首頁</button><button class="btn btn-primary" data-route="learn/${u}/1/0">我懂了，學 5 個字 →</button></div>`}
+function learnHeader(u){const s=stage(u);return `<div class="learning-header"><div><span class="eyebrow">LEVEL ${s.id} · ${esc(s.title)}</span><h1>第 ${u+1} 單元 <span class="pill ${s.color}">2 個相關文法主題 · 5 個單字</span></h1><p>兩個文法小主題 → 三個關鍵觀念 → 五個單字 → 例句和練習 → 詳細手寫筆記</p></div><div class="unit-jump no-print"><label class="tiny muted" for="unit-select">跳至單元</label><input type="number" id="unit-select" min="1" max="${UNITS}" value="${u+1}" aria-label="單元編號"><button class="mini-btn" data-unit-jump>前往</button></div></div><div class="progress-row"><span class="tiny muted">總進度 ${store.completed.length} / ${UNITS} 單元</span><span class="tiny muted">${Math.min((u+1)*5,WORDS.length)} / ${WORDS.length} 字的學習路線</span></div><div class="progress-line"><span style="width:${Math.min(100,(store.completed.length/UNITS)*100)}%"></span></div>`}
+function learnGrammar(u){const {lesson,partner,concepts,examples,review}=ruleFor(u);return `<div class="step-top"><div><span class="pill blue">${review?'兩個文法主題再複習':'兩個相連的文法主題'}</span><h2>${esc(lesson.title)} ＋ ${esc(partner.title)}</h2></div></div><div class="topic-pair"><div class="topic-tag coral"><small>主題 A</small><strong>${esc(lesson.title)}</strong><p>${esc(lesson.subtitle||'')}</p><button class="mini-btn" data-route="grammar/${LESSONS.indexOf(lesson)}">完整教學 ↗</button></div><div class="topic-tag mint"><small>主題 B</small><strong>${esc(partner.title)}</strong><p>${esc(partner.subtitle||'')}</p><button class="mini-btn" data-route="grammar/${LESSONS.indexOf(partner)}">完整教學 ↗</button></div></div><div class="unit-learning-note">先把這 3 個觀念聽懂即可。更多規則和完整例句都會收錄到後面的手寫筆記。</div>${concepts.map((c,i)=>`<div class="rule-note"><span class="tiny muted">${i+1} / 3 · ${esc(c.topic)}</span><strong>${esc(c.title)}</strong><p>${esc(c.detail)}</p></div>`).join('')}<h3 class="learning-mini-heading">把兩個主題放進例句</h3>${examples.slice(0,3).map(x=>`<div class="example-row"><div><span class="tiny muted">${esc(x.topic)}</span><br><strong>${esc(x.en)}</strong><span>${esc(x.zh)}</span></div>${playBtn(x.en,'聽這句')}</div>`).join('')}<div class="step-actions"><button class="btn btn-ghost" data-route="home">回首頁</button><button class="btn btn-primary" data-route="learn/${u}/1/0">繼續學 5 個單字 →</button></div>`}
 function learnWord(u,idx){const w=getWords(u)[idx];if(!w)return `<div class="panel"><h2>這個單元沒有單字資料</h2></div>`;const key=`${u}:${idx}`,revealed=!!state.revealed[key];return `<div class="word-focus-head"><span class="pill peach">新單字 ${idx+1} / ${getWords(u).length}</span><span class="muted tiny">先猜意思，再翻開</span></div><div class="word-focus-box"><span class="word-number">VOCABULARY · ${esc(w.category||'基礎')}</span><h2 class="word-english">${esc(w.word)}</h2>${playBtn(w.word,'播放英文')}<div style="margin-top:19px"><span class="detail-label">🧩 拆分記憶</span>${chunksHtml(w)}</div>${revealed?`<div class="reveal-card"><div class="word-type">${esc(w.pos||'詞性待補')}</div><div class="meaning">${esc(w.meaning)}</div>${wordDetails(w,false)}</div>`:`<button class="btn btn-mint" data-reveal="${key}">翻開中文與用法 👀</button>`}</div><div class="step-actions"><button class="btn btn-ghost" data-route="learn/${u}/${idx===0?0:1}/${idx===0?0:idx-1}">← ${idx===0?'文法':'上一個'}</button><button class="btn btn-primary" data-route="learn/${u}/${idx===getWords(u).length-1?2:1}/${idx===getWords(u).length-1?0:idx+1}">${idx===getWords(u).length-1?'看例句 →':'下一個字 →'}</button></div>`}
-function learnExamples(u){const {lesson}=ruleFor(u);const examples=(lesson.examples||[]).slice(0,2).map(([en,zh])=>({en,zh,label:'文法例句'}));getWords(u).filter(genuineExample).slice(0,2).forEach(w=>examples.push({en:w.example,zh:w.example_zh,label:'單字例句'}));return `<div class="step-top"><div><span class="pill mint">把句子聽熟</span><h2>今天的例句</h2></div></div><p>一次先理解幾句話就好。播放發音、對照中文，再試著自己讀一次。</p>${examples.map((x,i)=>`<div class="example-row"><div><span class="tiny muted">${esc(x.label)} ${i+1}</span><br><strong>${esc(x.en)}</strong><span>${esc(x.zh)}</span></div>${playBtn(x.en,'聽例句')}</div>`).join('')}<div class="step-actions"><button class="btn btn-ghost" data-route="learn/${u}/1/${getWords(u).length-1}">← 單字</button><button class="btn btn-primary" data-route="learn/${u}/3">簡單練習 →</button></div>`}
-function quizData(u){const w=getWords(u),{lesson}=ruleFor(u),es=(lesson.examples||[]);const set=[];for(let i=0;i<Math.min(2,w.length);i++){const correct=w[i],choices=w.filter(x=>x.meaning!==correct.meaning).slice(i+1).concat(w.filter(x=>x.meaning!==correct.meaning).slice(0,i+1)).slice(0,3);const opts=[correct,...choices].sort((a,b)=>((a.word.charCodeAt(0)+u)%5)-((b.word.charCodeAt(0)+u)%5));const answers=opts.map(x=>x.meaning);set.push({kind:'單字理解',stem:`「${correct.word}」的意思是什麼？`,audio:correct.word,options:answers,correct:opts.findIndex(x=>x.word===correct.word),explanation:`${correct.word} = ${correct.meaning}。`,details:opts.map(x=>`${x.word}：${x.meaning}`)})}
-if(es.length>=2){const correct=es[(u%es.length)],distractions=es.filter(x=>x!==correct).map(x=>x[1]).slice(0,2);const choices=[correct[1],...distractions];if(choices.length<3)choices.push('這句話的意思與前面完全相反');const rotated=choices.slice(u%3).concat(choices.slice(0,u%3));set.push({kind:'例句理解',stem:`這句英文的意思是什麼？\n${correct[0]}`,audio:correct[0],options:rotated,correct:rotated.indexOf(correct[1]),explanation:`${correct[0]} = ${correct[1]}。`,details:rotated.map(x=>x===correct[1]?'符合句子的中文意思。':'這是其他句子的意思，或與原句不符。')})}return set}
-function quizItem(q,key,idx){const m=String(key).match(/^p(\d+)q(\d+)$/);const a=m?(store.paperAnswers[PAPERS[Number(m[1])]?.id]||{})[Number(m[2])]:store.answers[key];return `<div class="practice-card"><span class="pill ${idx%2?'blue':'peach'}">第 ${idx+1} 題 · ${esc(q.kind)}</span><h3 style="white-space:pre-line">${esc(q.stem)}</h3>${playBtn(q.audio,'聽英文')}<div class="options" style="margin-top:15px">${q.options.map((op,i)=>`<button class="option ${a!==undefined?(i===q.correct?'correct':i===a?'incorrect':''):''}" data-study-answer="${esc(key)}" data-answer="${i}" ${a!==undefined?'disabled':''}><b>${'ABCD'[i]}.</b> ${esc(op)}</button>`).join('')}</div>${a!==undefined?`<div class="explain"><strong>${a===q.correct?'✓ 答對了！':'再記住一次就好'}　正確答案：${'ABCD'[q.correct]}</strong><p>${esc(q.explanation)}</p>${q.detail?`<p>${esc(q.detail)}</p>`:''}${q.details?.map((x,i)=>`<div><b>${'ABCD'[i]}.</b> ${esc(x)}</div>`).join('')||''}</div>`:''}</div>`}
-function learnQuiz(u){const qs=quizData(u);const done=qs.filter((x,i)=>store.answers[`u${u}q${i}`]!==undefined).length;return `<div class="step-top"><div><span class="pill yellow">不用急著考多益</span><h2>3 題小練習</h2></div><span class="tiny muted">已作答 ${done} / ${qs.length}</span></div><p>這是為了幫你確認剛剛學懂了多少，答錯也能馬上看解釋。</p>${qs.map((q,i)=>quizItem(q,`u${u}q${i}`,i)).join('')}${done?`<button class="mini-btn" data-reset-unit="${u}">↻ 重新練習這 3 題</button>`:''}<div class="step-actions"><button class="btn btn-ghost" data-route="learn/${u}/2">← 重聽例句</button><button class="btn btn-primary" data-route="learn/${u}/4">整理手寫筆記 →</button></div>`}
-function noteText(u){
-const {lesson,subset}=ruleFor(u),w=getWords(u),examples=(lesson.examples||[]).slice(0,2);
-const lines=[`✎ 第 ${u+1} 單元｜我的英文學習手帳`,`日期：_____________  課程：${lesson.title}`,`──────── 第 1 頁：GRAMMAR ────────`,`✦ 今日要回答：今天這個文法要怎麼用？`,...subset.flatMap(([a,b],i)=>[`〔規則 ${i+1}〕${a}`,`→ ${b}`]),`✦ 我聽懂的例句`,...examples.flatMap(([en,zh],i)=>[`${i+1}. ${en}`,`   ${zh}`]),`✦ 最容易忘記的地方`,lesson.tip||'把主詞、動詞和時態一起檢查。',`✦ 用自己的話說：________________________________`,`──────── 第 2 頁：VOCABULARY ────────`];
-for(const [i,x] of w.entries()){
-lines.push(`${i+1}. ${x.word}  ${x.pos||''}  ${x.meaning}`);
-lines.push(`   拆字：${spl(x).join(' / ')}`);
-if(x.usage)lines.push(`   常用：${x.usage}`);
-if(genuineExample(x))lines.push(`   例句：${x.example} ／ ${x.example_zh}`);
-lines.push('   我自己的例句：____________________________');
+function learnExamples(u){const pack=ruleFor(u);const examples=pack.examples.slice(0,4).map(x=>({...x,label:'文法例句'}));getWords(u).filter(genuineExample).slice(0,2).forEach(w=>examples.push({en:w.example,zh:w.example_zh,label:'單字例句',topic:w.word}));return `<div class="step-top"><div><span class="pill mint">把句子聽熟</span><h2>兩個文法主題的例句</h2></div></div><p>先讀英文，再聽一次、對照中文。每次只理解一個句子；整個單元的例句會收在筆記中。</p>${examples.map((x,i)=>`<div class="example-row"><div><span class="tiny muted">${esc(x.topic||x.label)} · ${i+1}</span><br><strong>${esc(x.en)}</strong><span>${esc(x.zh)}</span></div>${playBtn(x.en,'聽例句')}</div>`).join('')}<div class="step-actions"><button class="btn btn-ghost" data-route="learn/${u}/1/${getWords(u).length-1}">← 單字</button><button class="btn btn-primary" data-route="learn/${u}/3">立即小練習 →</button></div>`}
+function quizData(u){
+ const words=getWords(u),pack=ruleFor(u),set=[];
+ for(let i=0;i<Math.min(2,words.length);i++){
+  const current=words[i];let distractors=words.filter(x=>x.word!==current.word&&x.meaning!==current.meaning).slice(0,3);
+  if(distractors.length<3)distractors=priority.filter(x=>x.word!==current.word&&x.meaning!==current.meaning).slice(0,3);
+  const rotated=[...distractors.slice(i),current,...distractors.slice(0,i)].slice(0,4);
+  set.push({kind:'單字理解',stem:`「${current.word}」的意思是什麼？`,audio:current.word,options:rotated.map(x=>x.meaning),correct:rotated.findIndex(x=>x.word===current.word),explanation:`${current.word} = ${current.meaning}。`,details:rotated.map(x=>`${x.word}：${x.meaning}`)});
+ }
+ for(const [j,part] of [pack.lesson,pack.partner].entries()){
+  const ex=part.examples||[]; if(!ex.length)continue;
+  const correct=ex[(u+j)%ex.length],all=[...pack.examples.map(x=>x.zh),...LESSONS[(u+j+8)%LESSONS.length].examples.map(x=>x[1])];
+  const distractors=[...new Set(all.filter(x=>x&&x!==correct[1]))].slice(0,3);
+  if(distractors.length<3)continue;
+  const options=[correct[1],...distractors]; const shift=(u+j)%4; const rotated=options.slice(shift).concat(options.slice(0,shift));
+  set.push({kind:`文法理解 · ${part.title}`,stem:`這句英文的意思是什麼？\n${correct[0]}`,audio:correct[0],options:rotated,correct:rotated.indexOf(correct[1]),explanation:`${correct[0]} = ${correct[1]}。留意本單元「${part.title}」的句子結構。`,details:rotated.map(x=>x===correct[1]?'符合本句的中文意思。':'這是其他例句的意思，不符合此句。')});
+ }
+ return set;
 }
-lines.push('✦ 今天記住的 1 件事：____________________________');
-return lines.join('\n');
+function quizItem(q,key,idx){const m=String(key).match(/^p(\d+)q(\d+)$/);const a=m?(store.paperAnswers[PAPERS[Number(m[1])]?.id]||{})[Number(m[2])]:store.answers[key];return `<div class="practice-card"><span class="pill ${idx%2?'blue':'peach'}">第 ${idx+1} 題 · ${esc(q.kind)}</span><h3 style="white-space:pre-line">${esc(q.stem)}</h3>${playBtn(q.audio,'聽英文')}<div class="options" style="margin-top:15px">${q.options.map((op,i)=>`<button class="option ${a!==undefined?(i===q.correct?'correct':i===a?'incorrect':''):''}" data-study-answer="${esc(key)}" data-answer="${i}" ${a!==undefined?'disabled':''}><b>${'ABCD'[i]}.</b> ${esc(op)}</button>`).join('')}</div>${a!==undefined?`<div class="explain"><strong>${a===q.correct?'✓ 答對了！':'再記住一次就好'}　正確答案：${'ABCD'[q.correct]}</strong><p>${esc(q.explanation)}</p>${q.detail?`<p>${esc(q.detail)}</p>`:''}${q.details?.map((x,i)=>`<div><b>${'ABCD'[i]}.</b> ${esc(x)}</div>`).join('')||''}</div>`:''}</div>`}
+function learnQuiz(u){const qs=quizData(u);const done=qs.filter((x,i)=>store.answers[`u${u}q${i}`]!==undefined).length;return `<div class="step-top"><div><span class="pill yellow">不用急著考多益</span><h2>${qs.length} 題小練習</h2></div><span class="tiny muted">已作答 ${done} / ${qs.length}</span></div><p>兩個文法主題都會出題，再搭配單字理解；答錯可以對照中文解釋重新看一次。</p>${qs.map((q,i)=>quizItem(q,`u${u}q${i}`,i)).join('')}${done?`<button class="mini-btn" data-reset-unit="${u}">↻ 重新練習本單元</button>`:''}<div class="step-actions"><button class="btn btn-ghost" data-route="learn/${u}/2">← 重聽例句</button><button class="btn btn-primary" data-route="learn/${u}/4">整理手寫筆記 →</button></div>`}
+function noteText(u){
+ const {lesson,partner,concepts,examples}=ruleFor(u),words=getWords(u);
+ const lines=[`✎ 第 ${u+1} 單元｜我的英文學習手帳`,`日期：____________`,`本單元兩個主題：${lesson.title} ／ ${partner.title}`,'','════ 文法筆記｜先懂，再比較 ════',`〔主題 A〕${lesson.title}`,...(lesson.paragraphs||[]),`〔主題 B〕${partner.title}`,...(partner.paragraphs||[]),'','〔本次 3 個學習觀念〕'];
+ concepts.forEach((c,i)=>lines.push(`${i+1}. ${c.title}（${c.topic}）`,`   ${c.detail}`));
+ lines.push('','〔例句・中英對照〕');
+ examples.slice(0,4).forEach((x,i)=>lines.push(`${i+1}. ${x.en}`,`   ${x.zh}`));
+ lines.push('','〔兩個觀念一起記〕',`A. ${lesson.title}：${lesson.tip||lesson.subtitle}`,`B. ${partner.title}：${partner.tip||partner.subtitle}`,'','〔中翻英・自己再寫一次〕');
+ examples.slice(0,2).forEach((x,i)=>lines.push(`${i+1}. ${x.zh}`,'   英文：________________________________________'));
+ lines.push('','〔我自己的補充筆記〕','________________________________________________','________________________________________________','','════ 單字筆記｜五個字慢慢記 ════');
+ words.forEach((w,i)=>{
+  lines.push(`${i+1}. ${w.word} ${w.pos||''}｜${w.meaning}`,`   拼字記憶：${spl(w).join(' / ')}`);
+  if(sub(w.usage))lines.push(`   常見搭配：${w.usage}${getZ(w.usage)?'（'+getZ(w.usage)+'）':''}`);
+  if(genuineExample(w))lines.push(`   例句：${w.example}`,`   中文：${w.example_zh}`);
+  const relatedWord=tokens(w.synonyms).find(x=>getZ(x));if(relatedWord)lines.push(`   近義字：${relatedWord}（${getZ(relatedWord)}）`);
+  lines.push('   我自己造句：___________________________________','');
+ });
+ lines.push('〔下次複習〕□ 遮中文想意思　□ 朗讀例句　□ 自己造句');
+ return lines.join('\n');
 }
 function noteHtml(u){
-const {lesson,subset}=ruleFor(u),words=getWords(u),exampleRows=(lesson.examples||[]).slice(0,2);
-const ruleCards=subset.map(([rule,detail],i)=>`<div class="scribble-rule"><span class="ink-number">${String(i+1).padStart(2,'0')}</span><div><b class="marker-underline">${esc(rule)}</b><p>${esc(detail)}</p></div></div>`).join('');
-const examples=exampleRows.map(([en,zh],i)=>`<div class="hand-example"><span class="small-bubble">${i+1}</span><div><b>${esc(en)}</b><small>${esc(zh)}</small></div></div>`).join('');
-const entries=words.map((w,i)=>{
-const usage=sub(w.usage),hasExample=genuineExample(w);
-return `<div class="hand-word"><span class="hand-word-num">${i+1}</span><div class="hand-word-main"><div class="hand-word-head"><strong>${esc(w.word)}</strong><span>${esc(w.pos||'')}</span></div><div class="hand-word-meaning">${esc(w.meaning)}</div><div class="hand-word-split">拆：${esc(spl(w).join(' / '))}</div>${usage?`<div class="hand-word-usage">搭配：${esc(usage)}</div>`:''}${hasExample?`<div class="hand-word-usage">例：${esc(w.example)}<br><span>${esc(w.example_zh)}</span></div>`:''}<div class="write-my-own">我造句：<span class="writing-line"></span></div></div></div>`;
-}).join('');
-return `<div class="notebook-spread" id="note-content" aria-label="第 ${u+1} 單元的文法與單字手帳">
-<article class="notebook-sheet sheet-grammar">
-  <div class="notebook-holes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="paper-sticker sticker-coral" aria-hidden="true">✿</div>
-  <header class="sheet-header"><span class="sheet-eyebrow">✎  MY GRAMMAR NOTES</span><span class="sheet-number">01 / 02</span></header>
-  <h3 class="notebook-title">${esc(lesson.title)}</h3>
-  <div class="sheet-meta">第 ${u+1} 單元　／　日期：____________</div>
-  <div class="notebook-layout">
-    <aside class="cue-column"><strong>小提示</strong><span>怎麼用？</span><span>句型線索</span><span>哪裡容易錯？</span><span class="cue-star">✳︎</span></aside>
-    <div class="notes-main"><div class="scribble-heading"><span>01</span> 今日規則 <i>rule!</i></div>${ruleCards}
-      <div class="scribble-heading"><span>02</span> 例句抄寫 <i>example</i></div>${examples||'<div class="hand-example">今天的例句請寫在這裡。</div>'}
-      <div class="scribble-heading"><span>03</span> 這裡要小心！</div><div class="hand-tip">${esc(lesson.tip||'遇到句子時，先找主詞和動詞。')}</div>
-    </div>
-  </div>
-  <footer class="note-summary"><b>我的一句話筆記</b><span>我今天學會了 __________________________________</span></footer>
-</article>
-<article class="notebook-sheet sheet-vocab">
-  <div class="notebook-holes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="paper-sticker sticker-mint" aria-hidden="true">★</div>
-  <header class="sheet-header"><span class="sheet-eyebrow">✿  MY WORD COLLECTION</span><span class="sheet-number">02 / 02</span></header>
+ const {lesson,partner,concepts,examples}=ruleFor(u),words=getWords(u);
+ const conceptCards=concepts.map((c,i)=>`<div class="scribble-rule study-concept"><span class="ink-number">${String(i+1).padStart(2,'0')}</span><div><span class="note-topic-label">${esc(c.topic)}</span><b class="marker-underline">${esc(c.title)}</b><p>${esc(c.detail)}</p></div></div>`).join('');
+ const examplesHTML=examples.slice(0,4).map((x,i)=>`<div class="hand-example"><span class="small-bubble">${i+1}</span><div><span class="note-topic-label">${esc(x.topic)}</span><b>${esc(x.en)}</b><small>${esc(x.zh)}</small></div></div>`).join('');
+ const intro=[{l:lesson,label:'A'},{l:partner,label:'B'}].map(x=>`<div class="grammar-explain-block"><strong><span class="note-topic-pill">主題 ${x.label}</span> ${esc(x.l.title)}</strong>${(x.l.paragraphs||[]).slice(0,2).map(y=>`<p>${esc(y)}</p>`).join('')}</div>`).join('');
+ const entries=words.map((w,i)=>{
+  const common=sub(w.usage),hasExample=genuineExample(w);
+  const same=tokens(w.synonyms).find(x=>getZ(x));
+  const note=w.note&&!/尚無|待補/.test(w.note)?w.note:'';
+  return `<div class="hand-word"><span class="hand-word-num">${i+1}</span><div class="hand-word-main"><div class="hand-word-head"><strong>${esc(w.word)}</strong><span>${esc(w.pos||'')}</span></div><div class="hand-word-meaning">${esc(w.meaning)}</div><div class="hand-word-split">🧩 拼字記憶：${esc(spl(w).join(' / '))}</div>${common?`<div class="hand-word-usage"><b>常見搭配：</b>${esc(common)}${getZ(common)?`　<span>${esc(getZ(common))}</span>`:''}</div>`:''}${hasExample?`<div class="hand-word-usage"><b>例句：</b>${esc(w.example)}<br><span>中文：${esc(w.example_zh)}</span></div>`:''}${same?`<div class="hand-word-usage"><b>近義字：</b>${esc(same)}（${esc(getZ(same))}）</div>`:''}${note?`<div class="hand-word-usage"><b>補充：</b>${esc(note)}</div>`:''}<div class="write-my-own"><b>我造句：</b><span class="writing-line"></span></div><div class="note-write-lines" aria-hidden="true"><i></i></div></div></div>`;
+ }).join('');
+ return `<div class="notebook-spread notebook-detailed" id="note-content" aria-label="第 ${u+1} 單元的詳細文法與單字手帳">
+ <article class="notebook-sheet sheet-grammar">
+  <div class="notebook-holes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="paper-sticker sticker-coral" aria-hidden="true">✿</div>
+  <header class="sheet-header"><span class="sheet-eyebrow">✎ MY GRAMMAR NOTES</span><span class="sheet-number">01 / 02</span></header>
+  <h3 class="notebook-title">${esc(lesson.title)} <span class="notebook-plus">＋</span> ${esc(partner.title)}</h3>
+  <div class="sheet-meta">第 ${u+1} 單元　／　日期：____________　／　2 個主題・3 個觀念</div>
+  <div class="notebook-layout"><aside class="cue-column"><strong>小提示</strong><span>先懂意思</span><span>規則與用法</span><span>例句怎麼說？</span><span>差異與易錯</span><span>自己再寫</span><span class="cue-star">✳︎</span></aside>
+   <div class="notes-main"><div class="scribble-heading"><span>01</span> 上課先搞懂 <i>learn</i></div>${intro}
+    <div class="scribble-heading"><span>02</span> 三個重點慢慢記 <i>rules</i></div>${conceptCards}
+    <div class="scribble-heading"><span>03</span> 例句＋中文抄寫 <i>examples</i></div>${examplesHTML}
+    <div class="scribble-heading"><span>04</span> 相似觀念放在一起 <i>compare!</i></div>
+    <div class="grammar-compare"><div><small>主題 A · ${esc(lesson.title)}</small><p>${esc(lesson.tip||lesson.subtitle)}</p></div><div><small>主題 B · ${esc(partner.title)}</small><p>${esc(partner.tip||partner.subtitle)}</p></div></div>
+    <div class="scribble-heading"><span>05</span> 換我寫英文 <i>try it!</i></div>
+    <div class="note-translation-exercises">${examples.slice(0,2).map((x,i)=>`<div class="note-translation"><b>${i+1}. ${esc(x.zh)}</b><span class="note-write-lines"><i></i><i></i></span></div>`).join('')}</div>
+    <div class="scribble-heading"><span>06</span> 我自己的補充</div><div class="note-write-lines note-free-lines" aria-label="自由書寫空間"><i></i><i></i><i></i></div>
+   </div></div>
+  <footer class="note-summary"><b>今天能不能自己說出？</b><span>□ 我能分清楚兩個文法主題　□ 我能讀出例句　□ 我能自己寫一句</span></footer>
+ </article>
+ <article class="notebook-sheet sheet-vocab">
+  <div class="notebook-holes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><div class="paper-sticker sticker-mint" aria-hidden="true">★</div>
+  <header class="sheet-header"><span class="sheet-eyebrow">✿ MY WORD COLLECTION</span><span class="sheet-number">02 / 02</span></header>
   <h3 class="notebook-title">今天收集的 5 個字</h3>
-  <div class="sheet-meta">小目標：看懂、念出來，再自己造一句</div>
+  <div class="sheet-meta">中文意思 → 拆分記憶 → 搭配／例句 → 自己造句</div>
   <div class="word-notebook-collection">${entries}</div>
-  <footer class="note-summary"><b>複習提醒</b><span>遮住中文試著回想，再用其中 1 個字造句。</span></footer>
-</article></div>`;
+  <footer class="note-summary"><b>下次複習的三件事</b><span>□ 遮中文想意思　□ 聽英文跟讀　□ 挑兩個字自己造句</span></footer>
+ </article></div>`;
 }
-function learnNotes(u){return `<div class="step-top"><div><span class="pill peach">✎ NOTEBOOK TIME</span><h2>把今天學到的，寫成自己的筆記</h2></div></div><p class="notebook-intro">這不是只有答案的重點表：左邊可以寫提示，右邊記規則和例句，最後還留了自己造句的位置。可以照抄、遮住中文複習，也可以列印。</p>${noteHtml(u)}<div class="step-actions"><button class="btn btn-ghost" data-copy-note="${u}">複製文字筆記</button><button class="btn btn-ghost" data-print-note>列印手帳頁</button><button class="btn btn-primary" data-complete="${u}">${store.completed.includes(u)?'已完成，下一單元 →':'完成今天的學習 ✓'}</button></div>`}
+function learnNotes(u){return `<div class="step-top"><div><span class="pill peach">✎ NOTEBOOK TIME</span><h2>我的完整課堂筆記</h2></div></div><p class="notebook-intro">本單元有兩個相關文法主題、三個重點，附用法說明、四個中英例句、易錯提醒與中翻英練習；下方另有 5 個單字筆記。依照順序慢慢抄，不用一次抄完。</p>${noteHtml(u)}<div class="step-actions"><button class="btn btn-ghost" data-copy-note="${u}">複製完整文字筆記</button><button class="btn btn-ghost" data-print-note>列印手帳頁</button><button class="btn btn-primary" data-complete="${u}">${store.completed.includes(u)?'已完成，下一單元 →':'完成今天的學習 ✓'}</button></div>`}
 function learnPage(r){const u=clip(r[1]===undefined?store.unit:Number(r[1]),0,UNITS-1),step=clip(r[2]===undefined?0:Number(r[2]),0,4),idx=clip(Number(r[3]||0),0,4);store.unit=u;store.lastLearn=`learn/${u}/${step}/${idx}`;save();const blocks=[()=>learnGrammar(u),()=>learnWord(u,idx),()=>learnExamples(u),()=>learnQuiz(u),()=>learnNotes(u)];return `${learnHeader(u)}${stepNav(u,step,idx)}<section class="panel learn-panel" aria-label="本單元內容">${blocks[step]()}</section><div class="section-header"><p class="tiny muted">已累積 ${store.completed.length*5} 個完成單元的新字練習；學過的字會在後續例句反覆出現。</p><button class="text-button" data-route="words">有需要時查單字庫 ↗</button></div>`}
 function homePage(){
 const u=clip(store.unit,0,UNITS-1),p=stage(u),resume=store.lastLearn&&store.lastLearn.startsWith(`learn/${u}/`)?store.lastLearn:`learn/${u}/0`;
-return `<section class="home-hero"><div class="content"><span class="eyebrow">✳ MY LITTLE ENGLISH CLUB</span><h1>每天一小步，<br><em>英文慢慢長大！</em></h1><p>今天只要認識一個觀念、5 個新單字。其他的，等我們學會這一步再繼續。</p><div class="hero-actions"><button class="btn btn-primary" data-route="${resume}">${store.completed.length?'繼續今天的課':'開始第一堂課'} <span aria-hidden="true">✦</span></button><button class="btn btn-ghost" data-route="notes/${u}">翻開我的筆記本</button></div></div><div class="hero-art" aria-hidden="true"><div class="hero-washi"></div><div class="hero-art-top">TO DO TODAY <span>✿</span></div><strong>hello,<br>future me!</strong><div class="hero-art-bottom"><span>☑ 一個文法</span><span>☑ 五個單字</span><span>♡ 慢慢來</span></div><div class="hero-art-stamp">YOU GOT THIS!</div></div><div class="hero-spark spark-one" aria-hidden="true">✸</div><div class="hero-spark spark-two" aria-hidden="true">✿</div></section>
+return `<section class="home-hero"><div class="content"><span class="eyebrow">✳ MY LITTLE ENGLISH CLUB</span><h1>每天一小步，<br><em>英文慢慢長大！</em></h1><p>每堂學兩個相連的文法主題、5 個新單字；每天只拆成一小步，越學越有底子。</p><div class="hero-actions"><button class="btn btn-primary" data-route="${resume}">${store.completed.length?'繼續今天的課':'開始第一堂課'} <span aria-hidden="true">✦</span></button><button class="btn btn-ghost" data-route="notes/${u}">翻開我的筆記本</button></div></div><div class="hero-art" aria-hidden="true"><div class="hero-washi"></div><div class="hero-art-top">TO DO TODAY <span>✿</span></div><strong>hello,<br>future me!</strong><div class="hero-art-bottom"><span>☑ 兩個文法主題</span><span>☑ 五個單字</span><span>♡ 慢慢來</span></div><div class="hero-art-stamp">YOU GOT THIS!</div></div><div class="hero-spark spark-one" aria-hidden="true">✸</div><div class="hero-spark spark-two" aria-hidden="true">✿</div></section>
 <div class="section-header"><div><span class="eyebrow">PICK YOUR LITTLE ADVENTURE</span><h2>今天想先學哪一個？ <span class="title-doodle">✎</span></h2></div></div>
-<div class="journey-grid"><button class="journey-card" data-route="learn/${u}/0"><span>📕</span><b>文法小教室</b><p>今天的一個觀念</p><small>START HERE ↗</small></button><button class="journey-card" data-route="learn/${u}/1/0"><span>🍒</span><b>單字收集趣</b><p>一天五個，慢慢記</p><small>FLIP A WORD ↗</small></button><button class="journey-card" data-route="learn/${u}/3"><span>🧁</span><b>小試身手</b><p>練幾題，馬上看懂</p><small>LET'S TRY ↗</small></button></div>
+<div class="journey-grid"><button class="journey-card" data-route="learn/${u}/0"><span>📕</span><b>文法小教室</b><p>兩個相連的主題</p><small>START HERE ↗</small></button><button class="journey-card" data-route="learn/${u}/1/0"><span>🍒</span><b>單字收集趣</b><p>一天五個，慢慢記</p><small>FLIP A WORD ↗</small></button><button class="journey-card" data-route="learn/${u}/3"><span>🧁</span><b>小試身手</b><p>練幾題，馬上看懂</p><small>LET'S TRY ↗</small></button></div>
 <div class="home-bottom"><section class="progress-tile"><div class="progress-row"><strong>🌼 我的成長日記</strong><span class="pill ${p.color}">${esc(p.title)}</span></div><div class="progress-line"><span style="width:${store.completed.length/UNITS*100}%"></span></div><div class="progress-row"><span class="small">已走過 ${store.completed.length} / ${UNITS} 個小單元</span><button class="text-button" data-route="learn/${u}/0">接著學 →</button></div></section><section class="progress-tile progress-sticker"><span class="eyebrow">SECRET GARDEN</span><div class="progress-row"><strong>${WORDS.length.toLocaleString()} 個字</strong><strong>${LESSONS.length} 堂文法</strong></div><span class="tiny muted">寶藏都在這裡，但每天只需要解鎖一小點。</span></section></div>
 <div class="section-header"><div><span class="eyebrow">YOUR GROWING JOURNEY</span><h2>從小芽，慢慢長成大樹</h2></div></div><div class="journey-grid stages"><div class="journey-card"><span>🌱</span><b>01｜從零開始</b><p>詞性、主詞、簡單句子</p></div><div class="journey-card"><span>🌻</span><b>02｜基礎扎根</b><p>時態、動詞、句型</p></div><div class="journey-card"><span>🌈</span><b>03 → 04｜實際運用</b><p>例句、職場英文，再到多益題型</p></div></div>`;
 }
