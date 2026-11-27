@@ -6,28 +6,27 @@
   <meta name="theme-color" content="#7766b5">
   <meta name="description" content="每天五個單字、一點文法、例句與小練習，讓英文循序累積。">
   <title>小步學英文｜我的活潑英文手帳</title>
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=12">
   <script defer src="data.js?v=8"></script>
   <script defer src="curriculum.js?v=8"></script>
   <script defer src="papers-data.js?v=8"></script>
+  <script defer src="papers-extra.js?v=11"></script>
+  <script defer src="toeic-original.js?v=12"></script>
   <script defer src="enrichment.js?v=9"></script>
   <script defer src="morphology-index.js?v=10"></script>
-  <script defer src="app.js?v=10"></script>
+  <script defer src="app.js?v=12"></script>
 </head>
 <body>
   <div class="aurora aurora-one" aria-hidden="true"></div><div class="aurora aurora-two" aria-hidden="true"></div>
   <header class="site-header">
     <div class="header-inner">
       <a class="brand" href="#home" aria-label="回首頁"><span class="brand-symbol">✿</span><span><strong>小步學英文</strong><small>MY ENGLISH GARDEN</small></span></a>
-      <nav class="site-nav" aria-label="主要選單">
-        <a href="#home" data-nav="home">首頁</a>
-        <a href="#learn" data-nav="learn">學習</a>
-        <a href="#words" data-nav="words">單字庫</a>
-        <a href="#roots" data-nav="roots">字根・字族</a>
-        <a href="#grammar" data-nav="grammar">文法庫</a>
-        <a href="#review" data-nav="review">複習</a>
-        <a href="#notes" data-nav="notes">筆記</a>
-        <a href="#papers" data-nav="papers">練習卷</a>
+      <nav class="site-nav" aria-label="主要導覽">
+        <a href="#home" data-nav="home"><span class="nav-mark" aria-hidden="true">⌂</span><span>今天學習</span></a>
+        
+        <a href="#tools" data-nav="tools"><span class="nav-mark" aria-hidden="true">☷</span><span>查教材</span></a>
+        <a href="#papers" data-nav="papers"><span class="nav-mark" aria-hidden="true">▤</span><span>練習卷</span></a>
+        <a href="#my" data-nav="my"><span class="nav-mark" aria-hidden="true">✎</span><span>我的紀錄</span></a>
       </nav>
       <button class="sound-toggle" id="audio-settings-toggle" type="button" aria-label="語音設定" title="語音設定"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="10" width="3" height="10" rx="1"/><rect x="10" y="3" width="3" height="17" rx="1"/><rect x="17" y="7" width="3" height="13" rx="1"/></svg><span>發音設定</span></button>
     </div>
@@ -38,11 +37,19 @@
       <span id="speech-status" role="status"></span>
     </div>
   </header>
+      <nav class="mobile-bottom-nav" aria-label="手機主要導覽">
+        <a href="#home" data-nav="home"><span class="nav-mark" aria-hidden="true">⌂</span><span>今天學習</span></a>
+        
+        <a href="#tools" data-nav="tools"><span class="nav-mark" aria-hidden="true">☷</span><span>查教材</span></a>
+        <a href="#papers" data-nav="papers"><span class="nav-mark" aria-hidden="true">▤</span><span>練習卷</span></a>
+        <a href="#my" data-nav="my"><span class="nav-mark" aria-hidden="true">✎</span><span>我的紀錄</span></a>
+      </nav>
   <div class="app-shell">
     <div id="history-bar" class="history-bar" hidden><button id="back-btn" type="button" class="text-button">← 返回上一頁</button><span id="crumbs" class="breadcrumbs"></span></div>
     <main id="content" tabindex="-1" aria-live="polite"></main>
-    <footer class="footer"><span>🌱 每次學一點，累積就會看得見。</span><span>教材為自編基礎練習，非官方多益題目。進度僅保存在這台裝置。</span></footer>
+    <footer class="footer"><span>🌱 每次學一點，累積就會看得見。</span><span>教材包含原創題型入門，非 ETS 官方試題。進度儲存於此瀏覽器，請定期備份。</span></footer>
   </div>
+  <div id="save-indicator" aria-live="polite">● 檢查儲存中</div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
