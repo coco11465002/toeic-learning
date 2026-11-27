@@ -1,73 +1,46 @@
-# 小步學英文｜第十二版：原創多益題型入門、進度備份、四入口導覽
+# 小步學英文｜第十四版：閱讀文章、聽力入門與純學習導覽
 
-**適用於 GitHub Pages 的純靜態網站。** 不需要伺服器或付費 API。保留原有 3,000 字詞、59 個文法主題、字首字根字尾與字族索引、學習筆記、朗讀與間隔複習。
+**適用於 GitHub Pages 的個人英文學習網站，沒有付費服務或伺服器。**
 
-## 這一版新增
+## 導覽簡化
 
-- **四大入口**：今天學習、查教材、練習卷、我的紀錄。進入首頁即可繼續上次的學習步驟。
-- **36 回／510 題練習卷**：第 1–30 回為原有的 450 題基礎練習；第 31–36 回新增 60 題**原創 TOEIC L&R 題型入門題**。每回 10 題，依照 Part 2、3、4、5、6、7 分類，非官方歷屆試題。
-- **線上作答、解析與 PDF**：新增 12 份 PDF（第 31–36 回，題目卷與答案解析卷各 1 份）。聽力題在網站上透過裝置內建英文語音朗讀，音質和正式多益錄音有所不同；Part 1 圖片題請先使用官方範例。
-- **外部免費練習入口**：EnglishClub、TOEIC Training、WeLang、台灣 TOEIC 官方，提供前往原網站的連結。未複製他人的題目、音檔或解析。
-- **學習進度保護**：「我的紀錄」提供儲存測試、JSON 備份下載、JSON 匯入還原。這些資料仍保存在**同一裝置、同一瀏覽器、同一網址**的 localStorage；**沒有跨裝置自動同步**。
-- **保存狀態提醒**：使用瀏覽器儲存後再讀回檢查；若寫入失敗，顯示明確警示，不再靜默忽略。
+上方／手機下方只有四個入口：**今天學習、查教材、練習卷、閱讀・聽力**。
 
-## 練習卷分類
+- 已移除「資料備份」頁面、JSON 備份匯出／匯入和「間隔複習」頁面。原本的單字庫、字根字族、文法庫、紙本筆記與原創練習卷繼續保留。
+- **保留隱藏的本機自動儲存**：課程位置、完成單元、已作答的練習卷，以及閱讀／聽力的理解題答案都存在原來的 localStorage 鍵值 `toeic-smallsteps-v5`。重新整理不會主動清空。換裝置／瀏覽器、使用無痕或清除網站資料仍可能導致資料不見；這一版依要求不提供備份工具。
+- 舊網址 `#my`、`#review` 的連結會回首頁，不再顯示原本的備份／複習畫面。
 
-| 分類 | 回數 | 題數 |
-|---|---:|---:|
-| 基礎入門 | 01–10 | 150 |
-| 文法打底 | 11–20 | 150 |
-| 單字情境 | 21–30 | 150 |
-| 原創多益題型入門 | 31–36 | 60 |
-| **總計** | **36 回** | **510 題** |
+## 閱讀與聽力：24 篇、72 題
 
-站內新題的 `toeic-original.js` 含每題答案索引與中文解析。答題後會立即顯示理由。PDF 的聽力題**題目卷不印逐字稿**，須搭配網站朗讀作答；答案卷附完整文字稿。Part 6 題目為「單題段落填空入門」，不是官方完整題組的難度和篇幅；所有題目均非 ETS 官方考題，也不換算正式 TOEIC 分數。
+新增 `reading-data.js`：**12 篇原創閱讀短文 + 12 段原創聽力文本；三個層級（入門／進階／挑戰），共 120 個中英對照句子、72 題閱讀／聽力理解題**。每篇含：
 
-## 授權與資料來源
+1. 先讀或先聽。聽力預設隱藏文字稿，可播放整段，調整美式／英式口音與速度。
+2. 閱讀可顯示／隱藏逐句中文；聽力則可展開逐句中英文字稿。
+3. 重點單字以色塊標記，附中文與發音；資料庫已有的字可前往單字詳解。
+4. 每篇三道四選一理解題，作答後給出答案及中文解析。答案自動保存在目前瀏覽器，可選擇重做。
 
-以下資料只用來參考測驗題型、理解語言學習場景，**沒有重製或改寫其中的題目**：
+**聲音注意**：聽力使用 Web Speech API 的裝置內建語音，不是專業配音，也不是多益正式錄音。語音品質、可用音色依作業系統與瀏覽器而不同。教材為原創入門內容，不宣稱等同官方題目或正式模擬測驗。
 
-- ETS 官方 TOEIC 準備資源：https://www.ets.org/toeic/test-takers/prepare.html
-- IIBC 官方 TOEIC Listening & Reading 題型介紹：https://www.iibc-global.org/english/toeic/test/lr/about/format.html
-- 台灣 TOEIC 官方題型範例：https://toeic.com.tw/sample-test/toeic-listening-reading/sample01.html
-- EnglishClub TOEIC 練習：https://www.englishclub.com/esl-exams/ets-toeic-practice.php
+## 原有教材
 
-公開免費不一定表示允許轉載。本網站新題為自行撰寫，外部題庫只提供連結。
+- 保留 3,000 字詞、59 個文法主題及約 423 組字首／字根／字尾／字族與主題分類；部分詞彙的進階例句仍有待逐筆校訂。
+- 保留 36 回、510 題原有練習卷與 `papers/` 內的 72 份 PDF。這些是原創入門題或基礎練習，非 ETS 正式題庫。
+- 保留單字音檔朗讀按鈕、課程的手寫筆記版式以及返回鍵。
 
 ## 更新 GitHub Pages
 
-網站原址：https://coco11465002.github.io/toeic-learning/
+網站原網址：`https://coco11465002.github.io/toeic-learning/`。
 
-1. **推薦：完整網站 ZIP** 解壓縮後，將所有根目錄檔案與 `papers/` 資料夾上傳到 `https://github.com/coco11465002/toeic-learning` 的 `main` 分支根目錄。
-2. 確保 `index.html` 位於儲存庫根目錄，`papers/31_questions.pdf` 等新增 PDF 放在 `papers/` 資料夾內，而非 ZIP 內。
-3. 提交到 `main` 後由 GitHub Pages 自動重新部署，網址不變。不要刪除原本儲存庫或清除瀏覽器網站資料。
-4. **快速更新包只適合已使用第十一版的網站**：更新根目錄 `index.html`、`styles.css`、`app.js`、`toeic-original.js`、`README.md`，並上傳 `papers/31–36` 的 12 份 PDF。
+1. 下載並解壓縮**完整網站 ZIP**，上傳全部網站根目錄檔案及完整 `papers/` 資料夾至 `https://github.com/coco11465002/toeic-learning` 儲存庫 `main` 分支根目錄；保留原來的 `index.html` 路徑。
+2. 提交更新後 GitHub Pages 自動重新部署；網址維持不變，不必重新建立儲存庫。
+3. 如果網站之前已經是第十三版，可改用快速更新 ZIP，覆蓋 `index.html`、`styles.css`、`app.js`、`README.md` 並且**新增** `reading-data.js`。
+4. 不要清除瀏覽器的網站資料；第十四版沒有備份／還原入口，既有進度僅保留在原瀏覽器。
 
-## 進度安全說明
+## 學習方法與參考
 
-學習紀錄的 localStorage 鍵值仍是 `toeic-smallsteps-v5`，**沒有改名**，所以正常情況下可沿用第十、第十一版在同一網址與同一瀏覽器中的舊紀錄。
+閱讀從時間表、通知、訊息、預約郵件等簡單文本開始，逐步進到商務電子郵件、庫存通知與招聘文件；聽力從報時／地點逐步進到變更通知與業務說明。參考英語分級教學與 TOEIC L&R 題型範圍，**沒有轉載或改寫他人受保護的練習題**。
 
-但以下情況可能看不到舊紀錄：換瀏覽器、換裝置、改為無痕模式、清除網站資料、打開不同網域網址，或瀏覽器限制 localStorage。這不代表 GitHub Pages 會主動刪除紀錄。**請每隔幾天到「我的紀錄」下載一次 JSON 備份，必要時匯入還原。**
+- [ETS TOEIC L&R 題型介紹](https://www.ets.org/toeic/about/listening-reading.html)
+- [British Council LearnEnglish A1 Reading](https://learnenglish.britishcouncil.org/free-resources/reading/a1)
+- [British Council LearnEnglish A1 Listening](https://learnenglish.britishcouncil.org/free-resources/listening/a1)
 
-## 各檔案用途
-
-- `index.html`：網站入口與四大導覽
-- `styles.css`：手帳樣式與手機版
-- `app.js`：學習／答題／儲存／備份／還原等功能
-- `toeic-original.js`：這一版新增的 6 回、60 題原創多益題型入門題
-- `papers/31_questions.pdf` ～ `papers/36_answers.pdf`：新題目的 12 份 PDF
-- `papers-data.js`、`papers-extra.js`：既有 30 回練習題
-- `data.js`、`curriculum.js`、`enrichment.js`、`morphology-index.js`：既有單字、文法、例句及構詞索引
-- `LICENSE-ECDICT.txt`、`MORPH-AUDIT.txt`：既有字典授權與構詞索引說明
-
-注意：網站目前只是個人學習工具，不具備帳號系統、跨裝置雲端同步或官方多益測驗的認證功能。
-
-
-## 第十三版：移除學習進度儀表板
-
-- 首頁、單元及練習卷清單不再顯示完成率、進度條與作答總數。
-- 導覽的「我的紀錄」改稱「資料備份」，保留測試儲存、下載備份、匯入還原。
-- 保留從上次的位置繼續、複習安排及完成單元記錄，localStorage 鍵值完全不變。
-- 練習卷做完仍顯示正確答題結果與解析，這是作答回饋而非進度統計。
-- 僅在無法保存時顯示右下角警告，不再常駐顯示儲存成功的小浮標。
-- 手機導覽四個入口使用四欄排列。

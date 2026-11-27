@@ -32,9 +32,7 @@ if(!Array.isArray(store.completed))store.completed=[];
 if(!store.answers||typeof store.answers!=='object')store.answers={};
 if(!store.paperAnswers||typeof store.paperAnswers!=='object')store.paperAnswers={};
 if(!store.toeicAnswers||typeof store.toeicAnswers!=='object')store.toeicAnswers={};
-if(!store.reviewCards||typeof store.reviewCards!=='object')store.reviewCards={};
-// 首次升級時，把前幾版已完成的小單元加入待複習清單，保留原本學習進度。
-if(!store.reviewMigrated){for(const u of store.completed){const n=Number(u);if(!Number.isInteger(n)||n<0||n>=UNITS)continue;for(const w of getWords(n)){const key=w.word.toLowerCase();if(!store.reviewCards[key])store.reviewCards[key]={stage:0,due:dateOffset(0)}}}store.reviewMigrated=true;try{localStorage.setItem(storageKey,JSON.stringify(store))}catch{}}
+if(!store.storyAnswers||typeof store.storyAnswers!=='object')store.storyAnswers={};
 function save(){
  try{
   store.savedAt=new Date().toISOString();
@@ -45,46 +43,12 @@ function save(){
   const dot=document.getElementById('save-indicator');if(dot){dot.textContent='● 已存於此瀏覽器';dot.classList.remove('not-saved');}
   return true;
  }catch(err){
-  storageWorking=false;storageIssue='進度未能儲存在瀏覽器，請匯出備份並檢查無痕模式、網站資料權限或儲存空間';
-  const dot=document.getElementById('save-indicator');if(dot){dot.textContent='⚠ 進度未保存，請備份';dot.classList.add('not-saved');}
+  storageWorking=false;storageIssue='無法在此瀏覽器保存學習內容，請確認不是無痕視窗並允許網站儲存資料';
+  const dot=document.getElementById('save-indicator');if(dot){dot.textContent='⚠ 學習內容尚未保存';dot.classList.add('not-saved');}
   return false;
  }
 }
-function downloadBackup(){
- const payload={app:'toeic-smallsteps',format:1,exportedAt:new Date().toISOString(),progress:store};
- const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
- const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;
- a.download='我的多益學習紀錄_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();
- setTimeout(()=>URL.revokeObjectURL(url),4000);toast('備份檔已下載，請妥善保管');
-}
-function validateImported(x){
- const p=x?.app==='toeic-smallsteps'?x.progress:x;
- if(!p||typeof p!=='object'||Array.isArray(p)||!Array.isArray(p.completed)||typeof p.answers!=='object'||typeof p.paperAnswers!=='object')throw new Error('備份內容不是有效的學習紀錄');
- const clean={...store,...p};clean.unit=clip(clean.unit,0,UNITS-1);
- clean.completed=[...new Set(p.completed.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<UNITS))].sort((a,b)=>a-b);
- clean.answers=p.answers||{};clean.paperAnswers=p.paperAnswers||{};clean.reviewCards=p.reviewCards&&typeof p.reviewCards==='object'?p.reviewCards:{};
- clean.toeicAnswers=p.toeicAnswers&&typeof p.toeicAnswers==='object'?p.toeicAnswers:{};
- clean.lastLearn=typeof p.lastLearn==='string'&&/^learn\/\d+\/[0-4](?:\/\d+)?$/.test(p.lastLearn)?p.lastLearn:`learn/${clean.unit}/0/0`;
- return clean;
-}
-async function restoreBackup(file){
- if(!file)return;
- if(file.size>2_000_000){toast('檔案太大，請選擇原本匯出的 JSON 備份');return;}
- try{
-  const restored=validateImported(JSON.parse(await file.text()));
-  if(!confirm(`將匯入 ${restored.completed.length} 堂課與練習紀錄，並取代本機目前的進度。要繼續嗎？`))return;
-  const previous=store;store=restored;
-  if(!save()){store=previous;toast('無法寫入瀏覽器。請不要關閉原始備份檔');return;}
-  location.hash='#my';render();toast('匯入成功！學習進度已還原');
- }catch(err){toast('還原失敗：'+(err.message||'檔案格式不符'));}
-}
-function storageTest(){
- try{const k='toeic-storage-test',v='test-'+Date.now();localStorage.setItem(k,v);if(localStorage.getItem(k)!==v)throw new Error();localStorage.removeItem(k);if(save())toast('測試通過：此瀏覽器可保存學習紀錄');else toast('儲存測試失敗，請先下載備份');}
- catch{storageWorking=false;storageIssue='瀏覽器目前拒絕儲存資料';toast('儲存測試失敗，建議使用一般瀏覽視窗並允許網站儲存資料');}
- render();
-}
-
-const state={wordSearch:'',wordCategory:'',wordShown:30,grammarSearch:'',revealed:{},rootCategory:'all',rootSearch:'',rootGroupShown:24,rootWordShown:{},rootWordSearch:{},rootRevealed:{},rootQuiz:{},rootQuizStep:{},reviewReveal:{},paperGroup:'intro'};
+const state={wordSearch:'',wordCategory:'',wordShown:30,grammarSearch:'',revealed:{},rootCategory:'all',rootSearch:'',rootGroupShown:24,rootWordShown:{},rootWordSearch:{},rootRevealed:{},rootQuiz:{},rootQuizStep:{},storyLevel:{reading:'all',listening:'all'},storyTranslations:{},storyTranscripts:{},paperGroup:'intro'};
 let oldHash=location.hash||'#home',historyTrail=[],lastSpoken='',toastTimer;
 const esc=x=>String(x??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 const sub=x=>String(x||'').replace(/\s+/g,' ').trim();
@@ -144,7 +108,7 @@ const full=`${usage(w)}${exampleBlock(w)}${related('同義／近義詞',w.synony
 return `<div class="word-insight">${pieces}${expanded?full:`<details class="more-info"><summary>查看完整例句、常見搭配與字族</summary><div class="word-insight">${full}</div></details>`}</div>`}
 function stepNav(u,step,idx){const steps=['文法','單字','例句','小練習','手寫筆記'];return `<div class="lesson-tabs">${steps.map((s,i)=>`<button class="${step===i?'active':''} ${store.completed.includes(u)?'done':''}" data-route="learn/${u}/${i}/${i===1?idx:0}">${['01','02','03','04','05'][i]} ${s}</button>`).join('')}</div>`}
 function learnHeader(u){const s=stage(u);return `<div class="learning-header"><div><span class="eyebrow">LEVEL ${s.id} · ${esc(s.title)}</span><h1>第 ${u+1} 單元 <span class="pill ${s.color}">2 個相關文法主題 · 5 個單字</span></h1><p>先學文法，再看單字與例句；理解後做練習，最後整理手寫筆記。</p></div><div class="unit-jump no-print"><label class="tiny muted" for="unit-select">選擇單元</label><input type="number" id="unit-select" min="1" max="${UNITS}" value="${u+1}" aria-label="單元編號"><button class="mini-btn" data-unit-jump>前往</button></div></div>`}
-function learnGrammar(u){const {lesson,partner,concepts,examples,review}=ruleFor(u);return `<div class="step-top"><div><span class="pill blue">${review?'兩個文法主題再複習':'兩個相連的文法主題'}</span><h2>${esc(lesson.title)} ＋ ${esc(partner.title)}</h2></div></div><div class="topic-pair"><div class="topic-tag coral"><small>主題 A</small><strong>${esc(lesson.title)}</strong><p>${esc(lesson.subtitle||'')}</p><button class="mini-btn" data-route="grammar/${LESSONS.indexOf(lesson)}">完整教學 ↗</button></div><div class="topic-tag mint"><small>主題 B</small><strong>${esc(partner.title)}</strong><p>${esc(partner.subtitle||'')}</p><button class="mini-btn" data-route="grammar/${LESSONS.indexOf(partner)}">完整教學 ↗</button></div></div><div class="unit-learning-note">先把這 3 個觀念聽懂即可。更多規則和完整例句都會收錄到後面的手寫筆記。</div>${concepts.map((c,i)=>`<div class="rule-note"><span class="tiny muted">${i+1} / 3 · ${esc(c.topic)}</span><strong>${esc(c.title)}</strong><p>${esc(c.detail)}</p></div>`).join('')}<h3 class="learning-mini-heading">把兩個主題放進例句</h3>${examples.slice(0,4).map((x,i)=>grammarExample(x,i)).join('')}<div class="step-actions"><button class="btn btn-ghost" data-route="home">回首頁</button><button class="btn btn-primary" data-route="learn/${u}/1/0">繼續學 5 個單字 →</button></div>`}
+function learnGrammar(u){const {lesson,partner,concepts,examples,review}=ruleFor(u);return `<div class="step-top"><div><span class="pill blue">${review?'兩個文法主題再應用':'兩個相連的文法主題'}</span><h2>${esc(lesson.title)} ＋ ${esc(partner.title)}</h2></div></div><div class="topic-pair"><div class="topic-tag coral"><small>主題 A</small><strong>${esc(lesson.title)}</strong><p>${esc(lesson.subtitle||'')}</p><button class="mini-btn" data-route="grammar/${LESSONS.indexOf(lesson)}">完整教學 ↗</button></div><div class="topic-tag mint"><small>主題 B</small><strong>${esc(partner.title)}</strong><p>${esc(partner.subtitle||'')}</p><button class="mini-btn" data-route="grammar/${LESSONS.indexOf(partner)}">完整教學 ↗</button></div></div><div class="unit-learning-note">先把這 3 個觀念聽懂即可。更多規則和完整例句都會收錄到後面的手寫筆記。</div>${concepts.map((c,i)=>`<div class="rule-note"><span class="tiny muted">${i+1} / 3 · ${esc(c.topic)}</span><strong>${esc(c.title)}</strong><p>${esc(c.detail)}</p></div>`).join('')}<h3 class="learning-mini-heading">把兩個主題放進例句</h3>${examples.slice(0,4).map((x,i)=>grammarExample(x,i)).join('')}<div class="step-actions"><button class="btn btn-ghost" data-route="home">回首頁</button><button class="btn btn-primary" data-route="learn/${u}/1/0">繼續學 5 個單字 →</button></div>`}
 function learnWord(u,idx){const w=getWords(u)[idx];if(!w)return `<div class="panel"><h2>這個單元沒有單字資料</h2></div>`;const key=`${u}:${idx}`,revealed=!!state.revealed[key];return `<div class="word-focus-head"><span class="pill peach">新單字 ${idx+1} / ${getWords(u).length}</span><span class="muted tiny">先猜意思，再翻開</span></div><div class="word-focus-box"><span class="word-number">VOCABULARY · ${esc(w.category||'基礎')}</span><h2 class="word-english">${esc(w.word)}</h2>${playBtn(w.word,'播放英文')}<div style="margin-top:19px"><span class="detail-label">🧩 拆分記憶</span>${chunksHtml(w)}</div>${morphMembership(w,true)}${revealed?`<div class="reveal-card"><div class="word-type">${esc(w.pos||'詞性待補')}</div><div class="meaning">${esc(w.meaning)}</div>${wordDetails(w,false)}</div>`:`<button class="btn btn-mint" data-reveal="${key}">翻開中文與用法 👀</button>`}</div><div class="step-actions"><button class="btn btn-ghost" data-route="learn/${u}/${idx===0?0:1}/${idx===0?0:idx-1}">← ${idx===0?'文法':'上一個'}</button><button class="btn btn-primary" data-route="learn/${u}/${idx===getWords(u).length-1?2:1}/${idx===getWords(u).length-1?0:idx+1}">${idx===getWords(u).length-1?'看例句 →':'下一個字 →'}</button></div>`}
 function learnExamples(u){const pack=ruleFor(u);const examples=pack.examples.slice(0,6).map(x=>({...x,label:'文法例句'}));getWords(u).forEach(w=>examplesFor(w).slice(0,1).forEach(x=>examples.push({...x,label:'單字例句',topic:w.word}))); return `<div class="step-top"><div><span class="pill mint">把句子聽熟</span><h2>兩個文法主題的例句</h2></div></div><p>先讀英文，再聽一次、對照中文。每次只理解一個句子；文法與單字的重點會用色塊標示；整個單元的例句也會收在筆記中。</p>${examples.map((x,i)=>x.label==='單字例句'?`<div class="example-row highlighted-example"><div><span class="tiny muted">單字 ${esc(x.topic)} · ${i+1}</span><br><strong>${wordPaint(x.en,WORD_MAP.get((x.topic||'').toLowerCase())||{word:x.topic})}</strong><span>${esc(x.zh)}</span></div>${playBtn(x.en,'聽例句')}</div>`:grammarExample(x,i)).join('')}<div class="step-actions"><button class="btn btn-ghost" data-route="learn/${u}/1/${getWords(u).length-1}">← 單字</button><button class="btn btn-primary" data-route="learn/${u}/3">立即小練習 →</button></div>`}
 function quizData(u){
@@ -183,7 +147,7 @@ function noteText(u){
   const rel=enriched(w).synonyms?.[0];if(rel)lines.push(`   近義字：${rel[0]}（${rel[1]}）`);
   lines.push('   我自己造句：___________________________________','');
  });
- lines.push('〔下次複習〕□ 遮中文想意思　□ 朗讀例句　□ 自己造句');
+ lines.push('〔讀完後試試〕□ 遮中文想意思　□ 朗讀例句　□ 自己造句');
  return lines.join('\n');
 }
 function noteHtml(u){
@@ -219,7 +183,7 @@ function noteHtml(u){
   <h3 class="notebook-title">今天收集的 5 個字</h3>
   <div class="sheet-meta">中文意思 → 拆分記憶 → 搭配／例句 → 自己造句</div>
   <div class="word-notebook-collection">${entries}</div>
-  <footer class="note-summary"><b>下次複習的三件事</b><span>□ 遮中文想意思　□ 聽英文跟讀　□ 挑兩個字自己造句</span></footer>
+  <footer class="note-summary"><b>再試試這三件事</b><span>□ 遮中文想意思　□ 聽英文跟讀　□ 挑兩個字自己造句</span></footer>
  </article></div>`;
 }
 function learnNotes(u){return `<div class="step-top"><div><span class="pill peach">✎ NOTEBOOK TIME</span><h2>我的完整課堂筆記</h2></div></div><p class="notebook-intro">本單元有兩個相關文法主題、三個重點，附用法說明、四個中英例句、易錯提醒與中翻英練習；下方另有 5 個單字筆記。依照順序慢慢抄，不用一次抄完。</p>${noteHtml(u)}<div class="step-actions"><button class="btn btn-ghost" data-copy-note="${u}">複製完整文字筆記</button><button class="btn btn-ghost" data-print-note>列印手帳頁</button><button class="btn btn-primary" data-complete="${u}">${store.completed.includes(u)?'已完成，下一單元 →':'完成今天的學習 ✓'}</button></div>`}
@@ -229,26 +193,18 @@ function homePage(){
  const now=ruleFor(u);
  const resume=store.lastLearn&&store.lastLearn.startsWith(`learn/${u}/`)?store.lastLearn:`learn/${u}/0`;
  return `<section class="home-hero v11-hero"><div class="content"><span class="eyebrow">✿ MY ENGLISH JOURNAL</span><h1>今天只要<br><em>學好這一小步</em></h1><p>今天的主題：<strong>${esc(now.lesson.title)}</strong>，搭配「${esc(now.partner.title)}」。跟著課程慢慢學，不用盯著進度條。</p><div class="hero-actions"><button class="btn btn-primary" data-route="${resume}">開始今天的學習 →</button></div></div><div class="hero-art" aria-hidden="true"><div class="hero-washi"></div><div class="hero-art-top">TODAY'S LITTLE PLAN <span>✿</span></div><strong>one step<br>at a time!</strong><div class="hero-art-bottom"><span>☑ 兩個文法觀念</span><span>☑ 五個單字</span><span>☑ 例句、練習、筆記</span></div></div></section>
- <div class="v12-home-simple"><button class="v12-home-shortcut" data-route="tools"><span>📚</span><span><strong>查教材</strong><small>單字・文法・字根字族</small></span><b>前往 ›</b></button><button class="v12-home-shortcut" data-route="papers"><span>📝</span><span><strong>做練習</strong><small>基礎卷・多益題型入門</small></span><b>前往 ›</b></button></div>`;
+ <div class="v12-home-simple story-home-shortcuts"><button class="v12-home-shortcut" data-route="reading"><span>📖</span><span><strong>讀一篇短文</strong><small>逐句理解・中文對照・重點字</small></span><b>前往 ›</b></button><button class="v12-home-shortcut" data-route="listening"><span>🎧</span><span><strong>練一段聽力</strong><small>先聽不看稿・慢速朗讀・理解題</small></span><b>前往 ›</b></button></div>`;
 }
 function toolsPage(){return `<header class="library-header"><span class="eyebrow">MY STUDY TOOLBOX</span><h1>學習工具箱 <span class="pill mint">有需要再打開</span></h1><p>上課中遇到不懂的單字或文法，來這裡查就好。所有資料都保留，不用在上方擠滿八個選單。</p></header><div class="v11-tool-grid">
  <button class="v11-tool-card tool-coral" data-route="words"><span class="tool-icon">Aa</span><div><h2>單字庫</h2><p>${WORDS.length.toLocaleString()} 個單字與詞組，附中文、發音、拆分與相關字族。</p><small>查單字 →</small></div></button>
  <button class="v11-tool-card tool-mint" data-route="roots"><span class="tool-icon">✣</span><div><h2>字根・字族</h2><p>${MORPH.length} 組分類。學一個字，認識它的衍生字與詞綴。</p><small>找字族 →</small></div></button>
- <button class="v11-tool-card tool-lilac" data-route="grammar"><span class="tool-icon">✎</span><div><h2>文法庫</h2><p>${LESSONS.length} 個文法主題。有不清楚的規則可以回來看例句。</p><small>複習文法 →</small></div></button>
- <button class="v11-tool-card tool-yellow" data-route="review"><span class="tool-icon">↺</span><div><h2>間隔複習</h2><p>先試著回想學過的字，再翻中文確認。</p><small>開始複習 →</small></div></button></div><div class="v11-tool-tip"><strong>不確定從哪裡開始？</strong> 正常上課直接按「開始學習」，工具箱是遇到疑問時才來查。</div>`}
+ <button class="v11-tool-card tool-lilac" data-route="grammar"><span class="tool-icon">✎</span><div><h2>文法庫</h2><p>${LESSONS.length} 個文法主題。有不清楚的規則可以回來看例句。</p><small>查文法 →</small></div></button>
+ <button class="v11-tool-card tool-yellow" data-route="notes"><span class="tool-icon">✎</span><div><h2>我的英文筆記</h2><p>每單元兩個文法主題與五個單字，像手帳一樣整理並練習造句。</p><small>開啟筆記 →</small></div></button></div><div class="v11-tool-tip"><strong>不確定從哪裡開始？</strong> 正常上課直接按「開始學習」，工具箱是遇到疑問時才來查。</div>`}
 function wordsPage(){const q=state.wordSearch.trim().toLowerCase(),c=state.wordCategory;let a=priority.filter(w=>(!c||w.category===c)&&(!q||w.word.toLowerCase().includes(q)||w.meaning.includes(q))),shown=a.slice(0,state.wordShown);const categories=[...new Set(WORDS.map(x=>x.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-Hant'));return `<header class="library-header"><span class="eyebrow">MY VOCABULARY SHELF</span><h1>單字庫 <span class="pill peach">${WORDS.length.toLocaleString()} 字</span></h1><p>查單字時可以看完整搭配與詞族；正式學習還是建議從每天 5 個字開始。</p></header><div class="search-row"><input type="search" id="word-search" placeholder="搜尋英文或中文，例如：office、員工" value="${esc(state.wordSearch)}"><select id="category-search"><option value="">所有類別</option>${categories.map(x=>`<option ${x===c?'selected':''}>${esc(x)}</option>`).join('')}</select></div><div class="tiny muted" style="margin-bottom:15px">找到 ${a.length} 筆，現在顯示 ${shown.length} 筆</div><div class="library-grid">${shown.map(w=>`<button class="vocab-tile" data-route="word/${encodeURIComponent(w.word)}"><span class="pill mint">${esc(w.pos||'單字')}</span><strong>${esc(w.word)}</strong><p>${esc(w.meaning)}</p><small>🧩 ${esc(spl(w).join(' / '))}</small><span class="vocab-morph-label">🧬 ${esc(morphBrief(w))}</span></button>`).join('')}</div>${a.length>state.wordShown?`<div class="pager"><button class="btn btn-ghost" data-more-words>再看 30 個 ↓</button></div>`:''}`}
 function wordPage(r){const w=WORD_MAP.get((r[1]||'').toLowerCase());if(!w)return `<div class="panel"><h2>找不到這個單字</h2><button class="btn btn-ghost" data-route="words">回到單字庫</button></div>`;const position=priority.indexOf(w);return `<div class="library-header"><span class="eyebrow">FOCUS ON ONE WORD</span><div class="word-detail-title"><div><h1>${esc(w.word)}</h1><span class="pill mint">${esc(w.pos||'詞性待補')}</span><span class="pill blue">${esc(w.category||'詞彙')}</span></div>${playBtn(w.word,'聽單字')}</div><p class="meaning">${esc(w.meaning)}</p></div><article class="panel word-detail-full"><span class="detail-label">一步一步記住單字</span>${morphMembership(w)}${wordDetails(w,true)}<div class="soft-recall"><strong>遮住中文，能不能說出這個字的意思？</strong><p>再聽一遍發音，從例句中找到重點色塊。</p></div></article><div class="step-actions"><button class="btn btn-ghost" data-back>← 回上一頁</button>${position>=0?`<button class="btn btn-primary" data-route="word/${encodeURIComponent(priority[(position+1)%priority.length].word)}">下一個單字 →</button>`:''}</div>`}
 function grammarPage(r){if(r.length>1){const l=LESSONS[clip(Number(r[1]),0,LESSONS.length-1)];return `<header class="library-header"><span class="eyebrow">GRAMMAR LIBRARY · ${esc(l.level)}</span><h1>${esc(l.title)}</h1><p>${esc(l.subtitle)}</p></header><article class="panel"><h2>先理解基本觀念</h2>${(l.paragraphs||[]).map(x=>`<p>${esc(x)}</p>`).join('')}<div class="section-header"><h2>重要規則</h2></div>${(l.rules||[]).map(([a,b],i)=>`<div class="rule-note"><span class="tiny muted">${i+1}</span><strong>${esc(a)}</strong><p>${esc(b)}</p></div>`).join('')}<div class="section-header"><h2>例句慢慢聽</h2></div>${(l.examples||[]).map(([en,zh],i)=>grammarExample({en,zh,topic:l.title},i)).join('')}<div class="word-note-compact" style="margin-top:20px">⭐ ${esc(l.tip||'')}</div></article><div class="step-actions"><button class="btn btn-ghost" data-back>← 返回上一頁</button><button class="btn btn-primary" data-route="learn/${Math.min(LESSONS.indexOf(l)*2,UNITS-1)}/0">搭配小單元練習 →</button></div>`}
 const q=state.grammarSearch.trim().toLowerCase();const list=LESSONS.map((x,i)=>({...x,index:i})).filter(x=>!q||x.title.toLowerCase().includes(q)||x.subtitle.toLowerCase().includes(q));return `<header class="library-header"><span class="eyebrow">YOUR GRAMMAR HANDBOOK</span><h1>文法庫 <span class="pill blue">${LESSONS.length} 堂</span></h1><p>課程會從基本句型慢慢加深。需要複習哪個觀念，再來這裡查。</p></header><div class="search-row"><input type="search" id="grammar-search" placeholder="搜尋文法，例如：現在式、主詞、關係子句" value="${esc(state.grammarSearch)}"></div><div class="grammar-grid">${list.map((l,i)=>`<button class="grammar-tile" data-route="grammar/${l.index}"><span class="pill ${i%2?'peach':'mint'}">第 ${l.index+1} 堂 · ${esc(l.level)}</span><h3>${esc(l.title)}</h3><p>${esc(l.subtitle)}</p></button>`).join('')}</div>`}
 function notesPage(r){const u=clip(r[1]===undefined?store.unit:Number(r[1]),0,UNITS-1);return `<header class="library-header"><span class="eyebrow">✎ THE LITTLE NOTEBOOK</span><h1>我的英文手帳 <span class="title-doodle">✿</span></h1><p>每堂都有文法頁和單字頁，像學生筆記本一樣可以照抄、自己加註解。</p></header><div class="step-actions no-print" style="margin:0 0 20px"><div class="unit-jump"><input id="notes-unit-input" type="number" min="1" max="${UNITS}" value="${u+1}" aria-label="筆記單元"><button class="mini-btn" data-note-jump>切換單元</button></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-ghost" data-copy-note="${u}">複製文字筆記</button><button class="btn btn-mint" data-print-note>列印手帳頁</button></div></div>${noteHtml(u)}`}
-function myPage(){
- const saved=store.savedAt?new Date(store.savedAt).toLocaleString('zh-TW',{hour12:false}):'尚未紀錄';
- return `<header class="library-header v12-my-head"><span class="eyebrow">KEEP YOUR WORK SAFE</span><h1>資料備份</h1><p>這裡只放儲存、備份和還原功能。學習時不用看百分比或完成數量。</p></header>
- <article class="panel v12-account-panel"><div class="v12-section-top"><div><h2>保存你的學習紀錄</h2><p>重新整理通常會保留先前的學習內容，但 GitHub Pages 無法自動同步不同裝置。</p></div><span class="v12-storage-status ${storageWorking?'good':'bad'}">${storageWorking?'✓ 已啟用本機儲存':'⚠ 無法儲存'}</span></div>
- <p class="tiny muted">最近保存：${esc(saved)}。${storageIssue?esc(storageIssue):'請使用同一網址及一般（非無痕）瀏覽視窗。'}</p>
- <div class="v12-action-row"><button class="btn btn-ghost" data-test-save>測試儲存</button><button class="btn btn-primary" data-export-progress>↓ 下載備份</button><label class="btn btn-mint v12-file-label" for="progress-import">↑ 匯入備份</label><input type="file" id="progress-import" accept=".json,application/json" class="v12-hidden-file"></div>
- <p class="v12-safe-hint">建議定期下載 JSON 備份。如果更換裝置或清除瀏覽器資料，就能從這裡還原已學的內容。</p></article>`;
-}
 const PAPER_GROUPS=[{id:'intro',title:'基礎入門',sub:'熟悉詞性、be 動詞和最基礎的單字',short:'基礎'},
 {id:'grammar',title:'文法打底',sub:'時態、代名詞、連接詞與句型',short:'文法'},
 {id:'vocab',title:'單字情境',sub:'從完整例句判斷詞義、職場字彙',short:'單字'},
@@ -259,10 +215,6 @@ function papersPage(){const g=state.paperGroup||'intro',group=PAPER_GROUPS.find(
 <section class="panel v12-shared"><div class="v12-section-top"><div><span class="eyebrow">SHARED PRACTICE · 網友與教師的公開練習</span><h2>免費的外部題庫與測驗</h2><p>已公開分享、可以從原網站免費練習；下方僅提供連結，不搬運原作者題目、錄音或解析。外站成績不會同步到本網站。</p></div></div><div class="v12-shared-grid"><a href="https://www.englishclub.com/esl-exams/ets-toeic-practice.php" target="_blank" rel="noopener noreferrer"><span>🌿 TOEIC 分題練習</span><strong>EnglishClub</strong><small>常見 TOEIC 練習，適合逐題熟悉題型</small><b>前往練習 ↗</b></a><a href="https://www.toeic-training.com/" target="_blank" rel="noopener noreferrer"><span>🎧 聽力與閱讀</span><strong>TOEIC Training</strong><small>可在原站練習聽力與閱讀並查看答案</small><b>前往練習 ↗</b></a><a href="https://we-lang.com/quiz/?lang=en" target="_blank" rel="noopener noreferrer"><span>⏱ 12 分鐘短測</span><strong>WeLang</strong><small>20 題短測，適合準備接觸考試形式時使用</small><b>前往練習 ↗</b></a><a href="https://www.toeic.com.tw/sample-test/toeic-listening-reading/sample01.html" target="_blank" rel="noopener noreferrer"><span>📖 官方樣題</span><strong>台灣 TOEIC</strong><small>官方 Part 1～7 範例，包含聽力題型</small><b>查看官方範例 ↗</b></a></div><p class="tiny muted">「公開免費練習」不等於「可自由轉載」。若作者明確提供可重製授權，才會在標註授權與出處後納入站內題庫。</p></section>`:''}<p class="v11-bottom-hint">💡 先做一回就好。不用急著做多益題型，將基礎學會再挑戰。</p>`}
 function paperPage(r){const i=clip(Number(r[1]||0),0,PAPERS.length-1),p=PAPERS[i],questionIndex=clip(Number(r[2]||0),0,p.questions.length);const ans=store.paperAnswers[p.id]||{};const answered=paperProgress(p),score=p.questions.reduce((sum,q,n)=>sum+(ans[n]===q.correct?1:0),0);if(questionIndex===p.questions.length)return `<div class="panel v11-paper-finish"><div class="completed"><span class="trophy">✿</span><h2>${esc(p.title)}｜完成本回</h2><p>作答 ${answered}/${p.questions.length} 題，答對 ${score} 題。可以回到清單換一回，或重做這回。</p><div class="hero-actions"><button class="btn btn-primary" data-paper-return>返回練習卷清單</button><button class="btn btn-ghost" data-reset-paper="${i}">↻ 重新練習本回</button></div></div></div>`;
 const q=p.questions[questionIndex];return `<div class="v11-paper-top"><button class="text-button" data-paper-return>← 練習卷清單</button><span class="pill ${i<10?'mint':i<20?'blue':'peach'}">第 ${i+1} 回 · 第 ${questionIndex+1} / ${p.questions.length} 題</span></div><header class="v11-paper-title"><h1>${esc(p.title)}</h1></header><article class="panel v11-paper-question">${quizItem(q,`p${i}q${questionIndex}`,questionIndex)}<div class="step-actions"><button class="btn btn-ghost" data-route="${questionIndex===0?'papers':`paper/${i}/${questionIndex-1}`}">← ${questionIndex===0?'返回清單':'上一題'}</button><button class="btn btn-primary" data-route="paper/${i}/${questionIndex+1}">${questionIndex===p.questions.length-1?'查看這回結果 →':'下一題 →'}</button></div></article><p class="v11-bottom-hint">答題後立即顯示解析；未完成也可以先離開，下次從原題繼續。</p>`}
-function dateOffset(days){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+days);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
-function todayKey(){return dateOffset(0)}
-function dueReview(){return Object.entries(store.reviewCards||{}).filter(([key,c])=>WORD_MAP.has(key)&&c?.due<=todayKey()).map(([key])=>WORD_MAP.get(key)).slice(0,20)}
-function reviewPage(){const due=dueReview();if(!due.length)return `<header class="library-header"><span class="eyebrow">SPACED REVIEW · 間隔複習</span><h1>今天的複習花園 🌷</h1><p>今天沒有到期的單字。完成新的小單元後，單字會安排在隔天、3 天、7 天等時間重新出現。</p></header><div class="soft-recall"><strong>記住比重讀更有效</strong><p>先遮住中文自己想答案，想不起來再翻開。這是回想練習，不是考試。</p></div><div class="step-actions"><button class="btn btn-primary" data-route="learn">繼續學新單元 →</button><button class="btn btn-ghost" data-route="roots">學字根・字族 →</button></div>`;const w=due[0],key=w.word.toLowerCase(),reveal=!!state.reviewReveal[key],c=store.reviewCards[key];return `<header class="library-header"><span class="eyebrow">SPACED REVIEW · 先想答案</span><h1>今天的單字複習 <span class="pill mint">${due.length} 個待複習</span></h1><p>你之前學過的單字會按照間隔重新出現，讓記憶慢慢變穩定。</p></header><div class="review-focus"><small class="eyebrow">REMEMBER THIS WORD?</small><h2>${esc(w.word)}</h2>${playBtn(w.word,'聽單字')}<div class="word-chunks">${chunksHtml(w)}</div>${morphMembership(w,true)}${reveal?`<div class="review-reveal"><strong>${esc(w.meaning)}</strong>${exampleBlock(w,2)}<div class="review-grade"><button class="btn btn-ghost" data-review-grade="${esc(key)}:0">還不熟，明天再複習</button><button class="btn btn-primary" data-review-grade="${esc(key)}:1">我記得，增加間隔 ✓</button></div></div>`:`<button class="btn btn-mint" data-review-reveal="${esc(key)}">先在心裡說出中文 → 翻開</button>`}</div><p class="tiny muted review-hint">${c.stage===0?'第一次複習':'已成功回想 '+c.stage+' 次'} · 答對會延長下次複習的間隔；答不出來就明天再練。</p>`}
 // 第九版：字根、字族與全詞庫分類，分批瀏覽避免一次學習過量。
 const MORPH_TYPES={prefix:'字首 PREFIX',root:'字根 ROOT',suffix:'字尾 SUFFIX',family:'同字族 WORD FAMILY',topic:'主題整理 TOPIC'};
 const MORPH_BY_WORD=new Map();
@@ -343,21 +295,87 @@ function morphDetail(r){
  ${shown<filtered.length?`<div class="morph-more-wrap"><button class="btn btn-primary" data-root-more="${i}">再看 ${Math.min(12,filtered.length-shown)} 個字 ↓</button><button class="btn btn-ghost" data-root-all="${i}">一次展開本組全部 ${filtered.length} 個字</button></div>`:''}
  ${shown>=filtered.length&&filtered.length>24?`<div class="morph-more-wrap"><button class="btn btn-ghost" data-root-collapse="${i}">收起，回到前 12 個字 ↑</button></div>`:''}
  ${extra.length?`<details class="morph-extras"><summary>延伸學習 · ${extra.length} 個詞庫外例字</summary><p>以下是原先教材列出的補充詞，尚未列入 3,000 筆詞庫的正式學習進度。</p><div class="morph-word-grid">${extra.map(w=>`<div class="morph-word"><div class="morph-word-top"><b>${esc(w.en)}</b>${playBtn(w.en,'聽單字')}</div><p class="morph-translation">${esc(w.zh)}</p></div>`).join('')}</div></details>`:''}
- ${lessonExample?`<div class="morph-example"><small>情境例句 · 觀察重點色塊</small><div class="example-row highlighted-example"><div><strong>${paint(lessonExample.en,f.focus||lessonExample.focus||sample[0]?.en||'')}</strong><span>${esc(lessonExample.zh)}</span></div>${playBtn(lessonExample.en,'聽整句')}</div></div>`:''}
+ ${lessonExample?`<div class="morph-example"><small>情境例句 · 觀察重點色塊</small><div class="example-row highlighted-example"><div><strong>${paint(lessonExample.en,f.focus||lessonExample.focus||all[0]?.en||'')}</strong><span>${esc(lessonExample.zh)}</span></div>${playBtn(lessonExample.en,'聽整句')}</div></div>`:''}
  ${filtered.length>=2?`<section class="morph-practice"><div class="morph-practice-header"><span class="pill yellow">字族回想練習</span><span class="tiny muted">本組第 ${questionNo+1} / ${filtered.length} 個字</span></div><p class="tiny muted">這裡一次出一題，但會逐字輪流練到本組全部字詞，不只練前四個。</p><h3>「${esc(answer.zh)}」對應哪個英文？</h3><div class="morph-options">${opts.map((w,j)=>`<button class="morph-answer ${chosen!==undefined?(w.en===answer.en?'correct':j===chosen?'incorrect':''):''}" data-root-answer="${esc(qid)}:${j}" ${chosen!==undefined?'disabled':''}>${esc(w.en)}</button>`).join('')}</div>${chosen!==undefined?`<p class="morph-feedback">${opts[chosen]?.en===answer.en?'答對了！':'再記住一次！'} ${esc(answer.en)} = ${esc(answer.zh)}</p>`:''}<div class="morph-more-wrap"><button class="btn btn-mint" data-root-next="${i}">${questionNo+1>=filtered.length?'從第一個字再練一次 ↻':'練習下一個字 →'}</button></div></section>`:''}
  </div><div class="step-actions"><button class="btn btn-ghost" data-route="roots">← 字族總覽</button><button class="btn btn-primary" data-route="root/${(i+1)%MORPH.length}">下一組 →</button></div>`;
 }
 
-function render(){const r=route();const top=r[0];let html;switch(top){case'my':html=myPage();break;case'learn':html=learnPage(r.length===1?(store.lastLearn||'learn/0/0').split('/'):r);break;case'review':html=reviewPage();break;case'tools':html=toolsPage();break;case'roots':html=morphList();break;case'root':html=morphDetail(r);break;case'words':html=wordsPage();break;case'word':html=wordPage(r);break;case'grammar':html=grammarPage(r);break;case'notes':html=notesPage(r);break;case'papers':html=papersPage();break;case'paper':html=paperPage(r);break;default:html=homePage()}PAGE.innerHTML=html;document.querySelectorAll('[data-nav]').forEach(x=>x.classList.toggle('active',x.dataset.nav===(['word','words','root','roots','grammar','review','tools'].includes(top)?'tools':top==='paper'?'papers':['notes','my'].includes(top)?'my':top==='learn'?'home':top)));const bar=document.getElementById('history-bar');bar.hidden=top==='home';document.getElementById('crumbs').textContent=({'learn':'今日課程','tools':'學習工具箱','word':'單字詳解','review':'間隔複習','roots':'字根字族','root':'字根字族練習','words':'單字庫','grammar':'文法庫','notes':'筆記','papers':'練習卷','paper':'線上練習','my':'資料備份'}[top]||'');document.title='小步學英文｜'+(bar.hidden?'首頁':document.getElementById('crumbs').textContent);}
+// 第十四版：原創短文、情境聽力與理解練習；從易到難，不顯示學習進度儀表板。
+const STORIES=window.TOEIC_SKILL_STORIES||[];
+const LEVEL_NAMES={a1:'初學｜短句與公告',a2:'進階｜生活與職場',b1:'挑戰｜商務與細節'};
+function storyLabel(mode){return mode==='listening'?'聽力':'閱讀'}
+function storyPaint(en,vocab){
+  const terms=(vocab||[]).map(x=>x.en.trim()).filter(Boolean).sort((a,b)=>b.length-a.length);
+  if(!terms.length)return esc(en);
+  const safe=terms.map(x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
+  const re=new RegExp('\\b('+safe.join('|')+')(?:s|es|ed|d|ing)?\\b','gi');
+  let html='',from=0,m;
+  while((m=re.exec(en))!==null){html+=esc(en.slice(from,m.index));html+='<mark class="story-keyword">'+esc(m[0])+'</mark>';from=m.index+m[0].length;}
+  return html+esc(en.slice(from));
+}
+function storyModePage(){
+ return `<header class="library-header story-header"><span class="eyebrow">READ & LISTEN · 英文小故事屋</span><h1>讀一篇，聽一段 ✿</h1><p>先從短句開始，慢慢學會看懂通知、郵件、工作訊息。每次只選一篇，不用一次讀很多。</p></header>
+ <div class="story-entrances"><button data-route="reading" class="story-entrance read"><span class="story-entrance-art">📖</span><span class="story-entrance-text"><small>01 · READ</small><strong>閱讀文章</strong><span>讀短文、圈關鍵字、看懂中英對照，再回答問題。</span></span><span class="story-arrow">開始 ›</span></button>
+ <button data-route="listening" class="story-entrance listen"><span class="story-entrance-art">🎧</span><span class="story-entrance-text"><small>02 · LISTEN</small><strong>練習聽力</strong><span>先聽不看稿，再聽一次，最後打開文字稿確認。</span></span><span class="story-arrow">開始 ›</span></button></div>
+ <div class="story-guide"><b>一篇小練習的順序</b><span>① 先試著讀／聽</span><span>② 找出重點</span><span>③ 看中文、記單字</span><span>④ 做 3 題理解練習</span></div>`;
+}
+function storyListPage(mode){
+ const level=state.storyLevel[mode]||'all',list=STORIES.filter(x=>x.mode===mode&&(level==='all'||x.level===level));
+ const title=mode==='reading'?'閱讀文章':'聽力練習';
+ return `<header class="library-header story-header"><span class="eyebrow">${mode==='reading'?'READING CORNER':'LISTENING CORNER'}</span><h1>${mode==='reading'?'📖':'🎧'} ${title}</h1><p>${mode==='reading'?'從短篇生活告示開始，逐句理解後再閱讀更長的工作郵件。':'先聽一段話、抓地點與時間，最後再看逐句文字稿確認。語音使用你的裝置內建英文朗讀。'}</p></header>
+ <div class="story-level-tabs" role="group" aria-label="挑選難度">${[['all','全部短文'],['a1','入門'],['a2','進階'],['b1','挑戰']].map(([k,v])=>`<button data-story-level="${mode}:${k}" class="${level===k?'active':''}" aria-pressed="${level===k}">${v}</button>`).join('')}</div>
+ <div class="story-list">${list.map((x,i)=>`<button class="story-mini-card" data-route="${mode}/${x.id}"><span class="story-card-doodle">${mode==='reading'?'✿':'♫'}</span><span class="pill ${x.level==='a1'?'mint':x.level==='a2'?'peach':'blue'}">${esc(LEVEL_NAMES[x.level])}</span><h2>${esc(x.title)}</h2><p>${esc(x.scene)}</p><small>逐句中英對照 · 重點字 · 3 題理解</small><b>開始${storyLabel(mode)} ›</b></button>`).join('')}</div>
+ <div class="step-actions"><button class="btn btn-ghost" data-route="skills">← 閱讀・聽力首頁</button></div>`;
+}
+function storyDetailPage(mode,id){
+ const x=STORIES.find(t=>t.id===id&&t.mode===mode);
+ if(!x)return `<section class="panel"><h2>找不到這篇教材</h2><button class="btn btn-primary" data-route="${mode}">返回文章清單</button></section>`;
+ const isListen=mode==='listening',showText=!isListen||!!state.storyTranscripts[id],showZh=!!state.storyTranslations[id];
+ const answers=store.storyAnswers?.[id]||{};const full=x.lines.map(s=>s.en).join(' ');
+ return `<div class="story-detail-nav"><button class="text-button" data-route="${mode}">← 返回${storyLabel(mode)}文章清單</button><span class="pill ${x.level==='a1'?'mint':x.level==='a2'?'peach':'blue'}">${LEVEL_NAMES[x.level]}</span></div>
+ <header class="story-title-card ${isListen?'story-audio':'story-reader'}"><span class="eyebrow">${isListen?'LISTEN & LEARN':'READ & UNDERSTAND'}</span><h1>${esc(x.title)}</h1><p>${esc(x.scene)} · ${x.lines.length} 個短句</p><div class="story-title-controls">${playBtn(full,isListen?'播放整段聽力':'聽整篇文章')}${isListen?`<button class="btn btn-mint" data-story-transcript="${id}">${showText?'隱藏文字稿':'看逐句文字稿'}</button>`:`<button class="btn btn-mint" data-story-translate="${id}">${showZh?'隱藏中文':'顯示逐句中文'}</button>`}</div></header>
+ ${isListen?`<div class="story-listen-guidance"><span class="story-listen-icon">♫</span><div><strong>先聽，不急著看文字稿</strong><p>第一遍先聽「誰、何時、在哪裡」，第二遍再聽細節。如果聽不懂，可以調慢上方的朗讀速度，最後打開文字稿。</p></div></div>`:`<div class="story-read-guidance">用彩色標記找出這篇的重點字。遇到生字可以先猜，再到下方看中文與發音。</div>`}
+ ${showText?`<section class="story-lines" aria-label="${isListen?'聽力文字稿':'英文閱讀文章'}">${x.lines.map((s,i)=>`<article class="story-line"><div class="story-line-num">${String(i+1).padStart(2,'0')}</div><div class="story-line-content"><p class="story-line-en">${storyPaint(s.en,x.vocab)}</p>${showZh||isListen?`<p class="story-line-zh">${esc(s.zh)}</p>`:''}</div>${playBtn(s.en,'聽這句')}</article>`).join('')}</section>`:`<section class="story-transcript-hidden"><span>🎧</span><h2>文字稿暫時蓋起來</h2><p>按「播放整段聽力」先練耳朵；要對照英文與中文時，按上方「看逐句文字稿」。</p></section>`}
+ ${isListen&&showText?'':isListen?`<div class="story-show-after"><button class="btn btn-ghost" data-story-transcript="${id}">聽完了，打開逐句中英對照 →</button></div>`:''}
+ <section class="story-mini-notes"><div class="story-notes-heading"><span class="eyebrow">HIGHLIGHT & NOTE</span><h2>這篇要記住的字 ✍️</h2></div><div class="story-vocab">${x.vocab.map(v=>`<div class="story-vocab-item"><div><strong>${esc(v.en)}</strong><p>${esc(v.zh)}</p></div><div class="story-vocab-actions">${playBtn(v.en,'發音')}${WORD_MAP.has(v.en.toLowerCase())?`<button class="mini-btn" data-route="word/${encodeURIComponent(v.en)}">單字詳解 ↗</button>`:''}</div></div>`).join('')}</div><div class="story-grammar-hint"><b>✦ 今天的句子觀察</b><p>${esc(x.note)}</p></div></section>
+ <section class="story-quiz"><div class="story-notes-heading"><span class="eyebrow">CHECK YOUR UNDERSTANDING</span><h2>讀／聽懂了嗎？</h2><p>選完就能看到中文詳解。答錯可以回到上方，再讀或聽一次。</p></div>${x.questions.map((q,qi)=>{const ans=answers[qi];return `<div class="story-question"><div class="story-q-top"><span class="pill yellow">Q${qi+1}</span><strong>${esc(q.question)}</strong></div><div class="story-q-options">${q.options.map((opt,j)=>`<button data-story-answer="${x.id}:${qi}:${j}" class="story-choice ${ans!==undefined?(j===q.correct?'correct':j===ans?'wrong':''):''}" ${ans!==undefined?'disabled':''}><span>${String.fromCharCode(65+j)}</span>${esc(opt)}</button>`).join('')}</div>${ans!==undefined?`<div class="story-q-explain ${ans===q.correct?'good':'try'}"><b>${ans===q.correct?'✓ 答對了':'✎ 再看一次'}</b><p>正確答案：${String.fromCharCode(65+q.correct)}．${esc(q.options[q.correct])}</p><p>${esc(q.why)}</p></div>`:''}</div>`}).join('')}
+ <div class="story-quiz-foot"><button class="btn btn-ghost" data-story-reset="${id}">重新做這 3 題</button><button class="btn btn-primary" data-route="${mode}/${(STORIES.filter(t=>t.mode===mode)[(STORIES.filter(t=>t.mode===mode).findIndex(t=>t.id===id)+1)%12]).id}">下一篇${storyLabel(mode)} →</button></div></section>
+ <div class="step-actions"><button class="btn btn-ghost" data-route="${mode}">← 選其他${storyLabel(mode)}文章</button><button class="btn btn-mint" data-route="skills">閱讀・聽力首頁</button></div>`;
+}
+
+function render(){
+ const r=route();let top=r[0],html;
+ if(top==='my'||top==='review'){history.replaceState(null,'','#home');top='home';}
+ switch(top){
+ case'learn':html=learnPage(r.length===1?(store.lastLearn||'learn/0/0').split('/'):r);break;
+ case'tools':html=toolsPage();break;
+ case'skills':html=storyModePage();break;
+ case'reading':html=r[1]?storyDetailPage('reading',r[1]):storyListPage('reading');break;
+ case'listening':html=r[1]?storyDetailPage('listening',r[1]):storyListPage('listening');break;
+ case'roots':html=morphList();break;case'root':html=morphDetail(r);break;
+ case'words':html=wordsPage();break;case'word':html=wordPage(r);break;
+ case'grammar':html=grammarPage(r);break;case'notes':html=notesPage(r);break;
+ case'papers':html=papersPage();break;case'paper':html=paperPage(r);break;
+ default:html=homePage();top='home';
+ }
+ PAGE.innerHTML=html;
+ const nav=(['word','words','root','roots','grammar','tools','notes'].includes(top)?'tools':['skills','reading','listening'].includes(top)?'skills':top==='paper'?'papers':top==='learn'?'home':top);
+ document.querySelectorAll('[data-nav]').forEach(x=>x.classList.toggle('active',x.dataset.nav===nav));
+ const bar=document.getElementById('history-bar');bar.hidden=top==='home';
+ const labels={learn:'今日課程',tools:'單字・文法工具箱',skills:'閱讀・聽力',reading:'閱讀文章',listening:'聽力練習',word:'單字詳解',roots:'字根字族',root:'字根字族練習',words:'單字庫',grammar:'文法庫',notes:'英文筆記',papers:'練習卷',paper:'線上練習'};
+ document.getElementById('crumbs').textContent=labels[top]||'';
+ document.title='小步學英文｜'+(bar.hidden?'首頁':(labels[top]||''));
+}
 function historyChanged(){const newHash=location.hash||'#home';if(newHash!==oldHash){if(historyTrail.length&&newHash===historyTrail[historyTrail.length-1])historyTrail.pop();else historyTrail.push(oldHash);oldHash=newHash}render();window.scrollTo({top:0,behavior:'instant'})}
 window.addEventListener('hashchange',historyChanged);
 function copyNotes(u){const txt=noteText(u);if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>toast('筆記已複製')).catch(()=>toast('複製失敗，請改用列印'));else toast('此瀏覽器不支援一鍵複製')}
 document.addEventListener('click',e=>{const b=e.target.closest('button,[data-route]');if(!b)return;
 if(b.dataset.speak!==undefined){play(b.dataset.speak);return}
-if(b.hasAttribute('data-export-progress')){downloadBackup();return}
-if(b.hasAttribute('data-test-save')){storageTest();return}
-if(b.dataset.reviewReveal!==undefined){state.reviewReveal[b.dataset.reviewReveal]=true;render();return}
-if(b.dataset.reviewGrade!==undefined){const [key,grade]=b.dataset.reviewGrade.split(':');const c=store.reviewCards[key];if(c){const yes=grade==='1';c.stage=yes?Math.min((c.stage||0)+1,5):0;c.due=dateOffset(yes?[1,3,7,14,30,45][c.stage-1]:1);delete state.reviewReveal[key];save();render()}return}
+if(b.dataset.storyLevel!==undefined){const [mode,level]=b.dataset.storyLevel.split(':');state.storyLevel[mode]=level;render();return}
+if(b.dataset.storyTranscript!==undefined){const id=b.dataset.storyTranscript;state.storyTranscripts[id]=!state.storyTranscripts[id];render();return}
+if(b.dataset.storyTranslate!==undefined){const id=b.dataset.storyTranslate;state.storyTranslations[id]=!state.storyTranslations[id];render();return}
+if(b.dataset.storyAnswer!==undefined){const [id,qi,choice]=b.dataset.storyAnswer.split(':');const item=STORIES.find(x=>x.id===id);if(item&&item.questions[Number(qi)]&&(store.storyAnswers[id]||{})[qi]===undefined){store.storyAnswers[id]??={};store.storyAnswers[id][qi]=Number(choice);save();render()}return}
+if(b.dataset.storyReset!==undefined){delete store.storyAnswers[b.dataset.storyReset];save();render();return}
 if(b.dataset.rootFilter!==undefined){state.rootCategory=b.dataset.rootFilter;state.rootGroupShown=24;render();return}
 if(b.hasAttribute('data-root-more-groups')){state.rootGroupShown+=24;render();return}
 if(b.dataset.rootMore!==undefined){const n=b.dataset.rootMore;state.rootWordShown[n]=(state.rootWordShown[n]||12)+12;render();return}
@@ -374,7 +392,7 @@ if(b.dataset.reveal!==undefined){state.revealed[b.dataset.reveal]=true;render();
 if(b.dataset.studyAnswer!==undefined){const k=b.dataset.studyAnswer;const choice=Number(b.dataset.answer);if(k.startsWith('p')){let m=k.match(/^p(\d+)q(\d+)$/);if(m){let p=PAPERS[Number(m[1])];if(p){store.paperAnswers[p.id]??={};store.paperAnswers[p.id][Number(m[2])]=choice}}}else if(store.answers[k]===undefined){store.answers[k]=choice}save();render();return}
 if(b.dataset.resetUnit!==undefined){const u=Number(b.dataset.resetUnit);Object.keys(store.answers).filter(k=>k.startsWith(`u${u}q`)).forEach(k=>delete store.answers[k]);save();render();toast('已清除本單元作答，可重新練習');return}
 if(b.dataset.resetPaper!==undefined){const i=Number(b.dataset.resetPaper);delete store.paperAnswers[PAPERS[i]?.id];save();go(`paper/${i}/0`);toast('已清除本回作答，可重新測試');return}
-if(b.dataset.complete!==undefined){let u=Number(b.dataset.complete);if(!store.completed.includes(u))store.completed.push(u);getWords(u).forEach(w=>{const key=w.word.toLowerCase();if(!store.reviewCards[key])store.reviewCards[key]={stage:0,due:dateOffset(1)}});store.completed.sort((a,b)=>a-b);store.unit=Math.min(UNITS-1,u+1);store.lastLearn=`learn/${store.unit}/0/0`;save();go(`learn/${store.unit}/0`);toast('完成一堂！新的知識又多一點 🌱');return}
+if(b.dataset.complete!==undefined){let u=Number(b.dataset.complete);if(!store.completed.includes(u))store.completed.push(u);store.completed.sort((a,b)=>a-b);store.unit=Math.min(UNITS-1,u+1);store.lastLearn=`learn/${store.unit}/0/0`;save();go(`learn/${store.unit}/0`);toast('完成一堂！新的知識又多一點 🌱');return}
 if(b.dataset.copyNote!==undefined){copyNotes(Number(b.dataset.copyNote));return}
 if(b.hasAttribute('data-print-note')){window.print();return}
 if(b.hasAttribute('data-unit-jump')){let val=Number(document.getElementById('unit-select')?.value);if(val>=1&&val<=UNITS)go(`learn/${val-1}/0`);else toast('請輸入 1 到 '+UNITS+' 的單元');return}
@@ -385,7 +403,7 @@ if(b.id==='stop-speech'){window.speechSynthesis?.cancel();document.getElementByI
 });
 document.addEventListener('input',e=>{let x=e.target;if(x.id==='morph-search'){let pos=x.selectionStart;state.rootSearch=x.value;state.rootGroupShown=24;render();const n=document.getElementById('morph-search');n?.focus();n?.setSelectionRange(pos,pos)}else if(x.id==='morph-detail-search'){let pos=x.selectionStart;const i=x.dataset.morphGroup;state.rootWordSearch[i]=x.value;state.rootWordShown[i]=12;state.rootQuizStep[i]=0;render();const n=document.getElementById('morph-detail-search');n?.focus();n?.setSelectionRange(pos,pos)}else if(x.id==='word-search'){let pos=x.selectionStart;state.wordSearch=x.value;state.wordShown=30;render();const n=document.getElementById('word-search');n.focus();n.setSelectionRange(pos,pos)}else if(x.id==='grammar-search'){let pos=x.selectionStart;state.grammarSearch=x.value;render();const n=document.getElementById('grammar-search');n.focus();n.setSelectionRange(pos,pos)}});
 document.addEventListener('change',e=>{if(e.target.id==='category-search'){state.wordCategory=e.target.value;state.wordShown=30;render()}});
-document.addEventListener('change',e=>{if(e.target?.id==='progress-import'){const file=e.target.files?.[0];e.target.value='';restoreBackup(file)}});
+
 // Important: avoid silent in-memory changes when the browser refuses persistent storage.
 window.addEventListener('pagehide',()=>save());
 save();render();
