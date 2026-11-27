@@ -585,3 +585,15 @@ p{color:#696478}
 @media(max-width:860px){.story-list{grid-template-columns:repeat(2,minmax(0,1fr))}.story-vocab{grid-template-columns:repeat(2,minmax(0,1fr))}.story-entrances{gap:13px}.story-entrance{padding:19px 16px;gap:11px}.story-entrance-art{min-width:50px;height:51px;font-size:28px}}
 @media(max-width:620px){.story-entrances,.story-list,.story-vocab,.story-q-options{grid-template-columns:minmax(0,1fr)}.story-entrance{min-height:185px;padding:19px 15px}.story-entrance-text strong{font-size:23px}.story-guide{gap:7px;padding:15px}.story-guide span{font-size:12px}.story-mini-card{min-height:155px;padding:16px}.story-mini-card h2{font-size:20px}.story-title-card{padding:23px 16px}.story-lines{padding:6px 11px}.story-line{gap:8px;flex-wrap:wrap;padding:14px 3px}.story-line-num{min-width:22px}.story-line-content{flex:1;min-width:calc(100% - 65px)}.story-line>.play{margin-left:auto}.story-mini-notes,.story-quiz{padding:17px 13px}.story-q-options{gap:9px}.story-q-top{flex-wrap:wrap}.story-quiz-foot .btn{flex:1;min-width:0}.story-title-controls>.play{min-width:0!important;white-space:normal!important;word-break:keep-all}.story-detail-nav{flex-wrap:wrap}}
 @media print{.story-entrances,.story-guide,.story-detail-nav,.story-title-controls,.story-quiz-foot,.story-level-tabs,.story-line>.play{display:none!important}.story-mini-notes,.story-quiz,.story-lines{box-shadow:none;break-inside:auto}}
+/* 第十五版：單元內可抄寫的詳盡雙主題課堂筆記 */
+.note-rule-topic{margin:10px 0 18px;padding:15px 16px;background:#fffdf8;border:1px dashed #e9cfb3;border-radius:16px;break-inside:avoid-page}
+.note-rule-topic h4{margin:0 0 10px;font-size:1rem;color:#68569f;line-height:1.5}
+.note-rule-item{display:flex;align-items:flex-start;gap:12px;border-top:1px solid rgba(167,151,185,.19);padding:9px 0}
+.note-rule-item>span{flex-shrink:0;width:23px;height:23px;border-radius:7px;text-align:center;background:#f6e6fb;color:#634b80;font-weight:800;font-size:.85rem;line-height:23px}
+.note-rule-item>div{min-width:0;flex:1}
+.note-rule-item b{color:#383b55;font-size:.94rem;line-height:1.5}
+.note-rule-item p{margin:4px 0 0;color:#696879;line-height:1.65;font-size:.91rem}
+.form-base-note{padding:9px 12px;border-radius:12px;background:#f0f4ff;font-size:.9rem;line-height:1.6}
+.v15-paper-more{text-align:center;margin:16px auto 28px}
+@media print{.note-rule-item,.note-rule-topic{break-inside:avoid}}
+@media(max-width:720px){.note-rule-topic{padding:12px}.note-rule-item{gap:8px}.note-rule-item p{font-size:.86rem}}
