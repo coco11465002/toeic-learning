@@ -597,3 +597,198 @@ p{color:#696478}
 .v15-paper-more{text-align:center;margin:16px auto 28px}
 @media print{.note-rule-item,.note-rule-topic{break-inside:avoid}}
 @media(max-width:720px){.note-rule-topic{padding:12px}.note-rule-item{gap:8px}.note-rule-item p{font-size:.86rem}}
+
+/* ===== 第十六版：單元選擇、搜尋與 A4 學習筆記列印 ===== */
+.unit-finder{background:#fffdf7;border:1.5px solid #ebdadb;border-radius:19px;padding:16px 18px;box-shadow:3px 4px 0 #f5e9e1;margin-bottom:14px}
+.finder-title,.finder-bottom{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.finder-title{margin-bottom:12px}.finder-title strong{color:#574668;font-size:15px}.finder-title span,.finder-bottom>span{font-size:12px;color:#81778b}
+.unit-finder-grid{display:grid;grid-template-columns:minmax(150px,.8fr) minmax(150px,1.1fr) minmax(240px,2.1fr);gap:12px;align-items:end}
+.unit-finder-grid label,.story-finder label,.paper-finder label,.filter-search label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:800;color:#655872;min-width:0}
+.unit-finder select,.unit-finder input,.story-finder select,.story-finder input,.paper-finder input,.paper-finder select,.filter-search select,.filter-search input{display:block;max-width:100%;width:100%;height:43px;border:1px solid #dfd6e4;border-radius:11px;background:#fff;color:#413753;padding:8px 11px;min-width:0;font-size:13px;box-shadow:0 1px 2px #eee4e4}
+.unit-finder select:focus,.unit-finder input:focus,.story-finder :is(select,input):focus,.paper-finder :is(select,input):focus{border-color:#b789cd}
+.unit-finder-notes .unit-finder-grid{grid-template-columns:minmax(120px,.9fr) minmax(150px,1.1fr) minmax(250px,2fr)}
+.finder-bottom{margin-top:12px}.finder-arrows{display:flex;gap:8px;flex-wrap:wrap}
+.lesson-switch{align-self:flex-start;width:min(360px,100%);flex-shrink:0;border:1px solid #dfd3ec;border-radius:13px;background:#fff;padding:0;position:relative}
+.lesson-switch>summary{cursor:pointer;padding:11px 15px;font-weight:850;color:#7055a0;font-size:13px}
+.lesson-switch[open]{width:min(540px,100%)}.lesson-switch .unit-finder{margin:0;border:0;box-shadow:none;border-radius:0 0 13px 13px;padding:12px}
+.lesson-switch .unit-finder-grid{grid-template-columns:1fr}.lesson-switch .finder-title{align-items:flex-start}.lesson-switch .finder-bottom{align-items:flex-start}
+.note-action-area{margin:16px 0 24px}.note-action-buttons{display:flex;align-items:center;justify-content:flex-end;gap:11px;flex-wrap:wrap;margin-top:14px}
+.print-hint{font-size:12px;color:#776d7d;margin-right:auto;background:#fff4e2;border-radius:11px;padding:8px 12px}
+.story-finder,.paper-finder{display:grid;grid-template-columns:minmax(200px,1.3fr) minmax(170px,.8fr);gap:12px;align-items:end;background:#fffdf8;border:1px solid #f0e5e4;border-radius:16px;padding:16px;margin:17px 0 12px}
+.paper-finder{grid-template-columns:minmax(170px,1fr) minmax(240px,1.5fr) auto}
+.filter-search{display:grid;grid-template-columns:minmax(200px,2fr) minmax(160px,1fr)}
+.filter-result-count{margin:8px 0 16px;font-size:12px;color:#776e82}
+.empty-filter{padding:26px;background:#fff8ec;border:1px dashed #dfc8bb;border-radius:15px;color:#786574}
+@media(max-width:850px){.unit-finder-grid,.unit-finder-notes .unit-finder-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.unit-choice-box{grid-column:1/-1}.learning-header{flex-wrap:wrap}.lesson-switch{width:100%;max-width:100%}.paper-finder{grid-template-columns:repeat(2,minmax(0,1fr))}.paper-finder>.filter-result-count{grid-column:1/-1}}
+@media(max-width:620px){.unit-finder-grid,.unit-finder-notes .unit-finder-grid,.story-finder,.paper-finder,.filter-search{grid-template-columns:1fr}.unit-choice-box,.paper-finder>.filter-result-count{grid-column:auto}.unit-finder{padding:14px}.note-action-buttons{justify-content:stretch}.note-action-buttons .btn{flex:1}.finder-arrows{width:100%;justify-content:space-between}.lesson-switch[open]{width:100%}}
+
+/* A4 專用列印樣式：使用自然跨頁，避免內容被縮小、遮蔽或切斷。 */
+@page{size:A4 portrait;margin:12mm 11mm 14mm 11mm}
+@media print{
+ body:has(#note-content){background:#fff!important;color:#20202b!important;font-family:'Noto Sans CJK TC','Noto Sans TC',sans-serif!important;font-size:10pt;line-height:1.45}
+ body:has(#note-content) .app-shell{margin:0!important;padding:0!important;max-width:none!important;width:100%!important;min-height:0!important}
+ body:has(#note-content) .site-header,body:has(#note-content) .audio-settings,body:has(#note-content) .mobile-bottom-nav,body:has(#note-content) .history-bar,body:has(#note-content) .footer,body:has(#note-content) .toast,body:has(#note-content) #save-indicator,body:has(#note-content) .aurora{display:none!important}
+ body:has(#note-content) #content{padding:0!important;margin:0!important;display:block!important;width:100%!important}
+ body:has(#note-content) #content > :not(.notebook-spread):not(.learn-panel){display:none!important}
+ body:has(#note-content) #content > .learn-panel{margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;background:transparent!important;min-height:0!important;overflow:visible!important}
+ body:has(#note-content) #content > .learn-panel > :not(.notebook-spread){display:none!important}
+ body:has(#note-content) #note-content{display:block!important;margin:0!important;padding:0!important;width:100%!important;max-width:100%!important;overflow:visible!important}
+ body:has(#note-content) #note-content .notebook-sheet{display:block!important;width:100%!important;max-width:100%!important;padding:0!important;margin:0!important;min-height:0!important;height:auto!important;overflow:visible!important;break-inside:auto!important;break-after:auto!important;page-break-after:auto!important;box-shadow:none!important;border:0!important;border-radius:0!important;background:#fff!important}
+ body:has(#note-content) #note-content .sheet-vocab{break-before:page!important;page-break-before:always!important;margin-top:0!important}
+ body:has(#note-content) #note-content .sheet-grammar{break-after:auto!important;page-break-after:auto!important}
+ body:has(#note-content) #note-content .notebook-holes,body:has(#note-content) #note-content .paper-sticker{display:none!important}
+ body:has(#note-content) #note-content .sheet-header{margin:0 0 4mm!important;padding-bottom:2mm!important;border-bottom:1px solid #b4abb0;break-after:avoid-page}
+ body:has(#note-content) #note-content .notebook-title{font-size:17pt!important;line-height:1.35!important;margin:3mm 0 2mm!important;overflow-wrap:anywhere;break-after:avoid-page}
+ body:has(#note-content) #note-content .sheet-meta{font-size:9pt!important;margin-bottom:4mm!important;color:#555!important}
+ body:has(#note-content) #note-content .notebook-layout{display:grid!important;grid-template-columns:19mm minmax(0,1fr)!important;gap:3mm!important}
+ body:has(#note-content) #note-content .cue-column{font-size:8pt!important;padding:4mm 2mm!important;gap:9mm!important;background:#f7f7f7!important;border-radius:0!important;align-self:stretch}
+ body:has(#note-content) #note-content .notes-main{padding:0!important;font-size:10pt!important;min-width:0}
+ body:has(#note-content) #note-content .scribble-heading{font-size:11pt!important;margin:5mm 0 2mm!important;padding:0!important;break-after:avoid-page;page-break-after:avoid}
+ body:has(#note-content) #note-content .grammar-explain-block{margin:2mm 0 3mm!important;padding:2mm 3mm!important;box-shadow:none!important;border-radius:2mm!important;break-inside:avoid-page!important}
+ body:has(#note-content) #note-content .grammar-explain-block p{font-size:9.5pt!important;line-height:1.55!important;margin:1mm 0!important}
+ body:has(#note-content) #note-content .scribble-rule{margin:2mm 0!important;padding:2mm!important;break-inside:avoid-page!important}
+ body:has(#note-content) #note-content .scribble-rule p{font-size:9.3pt!important;line-height:1.45!important;margin:0!important}
+ body:has(#note-content) #note-content .note-rule-topic{break-inside:auto!important;margin:3mm 0!important;padding:2mm 3mm!important;box-shadow:none!important;border-radius:2mm!important}
+ body:has(#note-content) #note-content .note-rule-topic h4{margin:0 0 2mm!important;font-size:10pt!important;break-after:avoid-page}
+ body:has(#note-content) #note-content .note-rule-item{break-inside:avoid-page!important;padding:1.5mm 0!important;gap:2mm!important}
+ body:has(#note-content) #note-content .note-rule-item b{font-size:9.4pt!important}.notebook-detailed .note-rule-item p{font-size:9pt!important;line-height:1.45!important;margin:0!important}
+ body:has(#note-content) #note-content .hand-example{break-inside:avoid-page!important;margin:1.5mm 0!important;padding:2mm!important}
+ body:has(#note-content) #note-content .hand-example small{font-size:9pt!important}
+ body:has(#note-content) #note-content .grammar-compare{gap:3mm!important;margin:2mm 0!important}
+ body:has(#note-content) #note-content .grammar-compare>div{padding:2mm 3mm!important;break-inside:avoid-page!important}
+ body:has(#note-content) #note-content .grammar-compare p{font-size:9pt!important;line-height:1.45!important}
+ body:has(#note-content) #note-content .note-translation{break-inside:avoid-page!important;margin:2mm 0!important}
+ body:has(#note-content) #note-content .note-write-lines{gap:2mm!important;margin:1mm 0!important}
+ body:has(#note-content) #note-content .note-write-lines i{height:5mm!important}
+ body:has(#note-content) #note-content .note-summary{break-inside:avoid-page!important;margin:5mm 0 0!important;padding:2mm 3mm!important;font-size:9pt!important}
+ body:has(#note-content) #note-content .word-notebook-collection{display:block!important}
+ body:has(#note-content) #note-content .hand-word{break-inside:avoid-page!important;page-break-inside:avoid!important;padding:3mm 0 4mm!important;margin:0!important;border-bottom:1px solid #c7c7c7}
+ body:has(#note-content) #note-content .hand-word-main{min-width:0;font-size:9.3pt!important}
+ body:has(#note-content) #note-content .hand-word-usage{font-size:9pt!important;line-height:1.5!important;margin:1.5mm 0!important}
+ body:has(#note-content) #note-content .hand-word-meaning{font-size:10.5pt!important}
+ body:has(#note-content) #note-content .hand-word-split{font-size:9pt!important;margin:1mm 0!important}
+ body:has(#note-content) #note-content .write-my-own{margin-top:2mm!important}
+ body:has(#note-content) #note-content .focus-mark{background:#f4e0a7!important;color:#4c2c3e!important;padding:0 1mm!important}
+ body:has(#note-content) #note-content *{box-shadow:none!important;max-width:100%;overflow-wrap:anywhere}
+}
+
+@media print{body:has(#note-content) #note-content .sheet-vocab .note-summary{display:none!important}}
+
+
+/* v17 — A4 textbook-style print: consistent running heads and clean continuation pages.
+   Screen keeps the interactive notebook layout. Print removes notebook-edge furniture
+   so a page starting mid-lesson never resembles the top of a clipped card. */
+.print-book-running{display:none}
+@page{
+ size:A4 portrait;
+ margin:19mm 16mm 19mm 16mm;
+ @bottom-left{content:"小步學英文 · 原創學習講義";font-family:"Noto Sans CJK TC",sans-serif;font-size:8pt;color:#777d8c}
+ @bottom-right{content:"第 " counter(page) " 頁";font-family:"Noto Sans CJK TC",sans-serif;font-size:8pt;color:#777d8c}
+}
+@media print{
+ body:has(#note-content){font-family:"Noto Sans CJK TC","Noto Sans TC",sans-serif!important;color:#263241!important;line-height:1.48!important}
+ body:has(#note-content) #note-content{position:static!important;display:block!important;width:auto!important;max-width:none!important;margin:0!important;padding:0!important;overflow:visible!important}
+ body:has(#note-content) #note-content .print-book-running{
+    display:flex!important;position:fixed!important;top:-11.5mm!important;left:0!important;right:0!important;height:8mm!important;
+    align-items:center!important;justify-content:space-between!important;z-index:10!important;
+    padding:0 0 1mm!important;border-bottom:.35mm solid #bdc9d7!important;
+    background:white!important;color:#526477!important;font-size:8.8pt!important;line-height:1.2!important;
+    letter-spacing:.02em!important;
+ }
+ body:has(#note-content) #note-content .print-book-running b{font-weight:800!important;color:#314a60!important}
+ body:has(#note-content) #note-content .print-book-running span{font-weight:500!important}
+ body:has(#note-content) #note-content .notebook-sheet,
+ body:has(#note-content) #note-content .notebook-sheet:first-child,
+ body:has(#note-content) #note-content .notebook-sheet:last-child{
+    display:block!important;width:auto!important;max-width:none!important;min-height:0!important;height:auto!important;
+    margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:#fff!important;
+    background-image:none!important;box-shadow:none!important;overflow:visible!important;
+    break-inside:auto!important;break-after:auto!important;page-break-after:auto!important;
+ }
+ body:has(#note-content) #note-content .sheet-vocab{break-before:page!important;page-break-before:always!important}
+ body:has(#note-content) #note-content .notebook-layout{
+    display:block!important;grid-template-columns:none!important;gap:0!important;margin:0!important;padding:0!important;
+ }
+ body:has(#note-content) #note-content .cue-column,
+ body:has(#note-content) #note-content .notebook-holes,
+ body:has(#note-content) #note-content .paper-sticker{display:none!important}
+ body:has(#note-content) #note-content .notes-main{display:block!important;width:100%!important;padding:0!important;margin:0!important;font-size:10pt!important}
+ body:has(#note-content) #note-content .sheet-header{
+    display:flex!important;align-items:center!important;justify-content:space-between!important;margin:0 0 3.2mm!important;
+    padding:0 0 3mm!important;border-bottom:.5mm solid #7793a0!important;
+    break-after:avoid-page!important;page-break-after:avoid!important;
+ }
+ body:has(#note-content) #note-content .sheet-eyebrow{
+    font-size:11pt!important;line-height:1.3!important;font-weight:850!important;letter-spacing:.05em!important;color:#315e73!important;
+ }
+ body:has(#note-content) #note-content .sheet-number{font-size:9pt!important;color:#657983!important}
+ body:has(#note-content) #note-content .notebook-title{
+    font-family:"Noto Sans CJK TC","Noto Sans TC",sans-serif!important;font-size:16pt!important;
+    color:#273d5a!important;font-weight:850!important;line-height:1.38!important;
+    margin:1.5mm 0 2mm!important;break-after:avoid-page!important;
+ }
+ body:has(#note-content) #note-content .sheet-meta{font-size:9pt!important;margin:0 0 6mm!important;color:#626e7b!important}
+ body:has(#note-content) #note-content .scribble-heading{
+    display:flex!important;align-items:center!important;gap:2mm!important;
+    margin:5mm 0 2.5mm!important;padding:1.4mm 0 1.6mm!important;
+    border-bottom:.3mm solid #c5d5dc!important;background:white!important;
+    color:#38566e!important;font-weight:850!important;font-size:11.3pt!important;
+    break-after:avoid-page!important;page-break-after:avoid!important;
+ }
+ body:has(#note-content) #note-content .scribble-heading span{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    background:#dcecf0!important;color:#35566b!important;border-radius:2mm!important;
+    font-size:9pt!important;min-width:7mm!important;height:6mm!important;padding:0 1mm!important;
+ }
+ body:has(#note-content) #note-content .scribble-heading i{display:none!important}
+ body:has(#note-content) #note-content .grammar-explain-block{
+    background:#f5f9fb!important;border:1px solid #d6e4eb!important;border-left:2mm solid #93b7c6!important;
+    border-radius:1mm!important;padding:3mm 3.5mm!important;margin:2.5mm 0 3mm!important;
+    break-inside:avoid-page!important;page-break-inside:avoid!important;
+ }
+ body:has(#note-content) #note-content .grammar-explain-block p{line-height:1.55!important}
+ body:has(#note-content) #note-content .study-concept{break-inside:avoid-page!important;page-break-inside:avoid!important}
+ body:has(#note-content) #note-content .note-rule-topic{
+    display:block!important;margin:3mm 0 4mm!important;padding:2.5mm 3mm!important;
+    border:1px solid #dbe3e8!important;background:#fff!important;
+    border-radius:1mm!important;box-shadow:none!important;
+    break-inside:avoid-page!important;page-break-inside:avoid!important;
+ }
+ body:has(#note-content) #note-content .note-rule-topic h4{font-size:10.3pt!important;margin-bottom:2mm!important;color:#315c73!important}
+ body:has(#note-content) #note-content .note-rule-item{break-inside:avoid-page!important;padding:1.3mm 0!important}
+ body:has(#note-content) #note-content .hand-example{
+    break-inside:avoid-page!important;page-break-inside:avoid!important;
+    border-bottom:1px solid #e8edf0!important;margin:1.5mm 0!important;padding:2.6mm 1.4mm!important;
+ }
+ body:has(#note-content) #note-content .hand-example small{display:block!important;color:#586574!important}
+ body:has(#note-content) #note-content .grammar-compare{
+    break-inside:avoid-page!important;margin:3mm 0!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+ body:has(#note-content) #note-content .note-translation{break-inside:avoid-page!important;page-break-inside:avoid!important}
+ body:has(#note-content) #note-content .hand-word{
+    break-inside:avoid-page!important;page-break-inside:avoid!important;
+    margin:0!important;padding:3.5mm 0 4mm!important;border-bottom:1px solid #d3dce0!important;
+ }
+ body:has(#note-content) #note-content .hand-word-head strong{font-size:13pt!important;color:#2b6170!important}
+ body:has(#note-content) #note-content .hand-word-split,
+ body:has(#note-content) #note-content .hand-word-class{background:#f6fafb!important;border-radius:1mm!important}
+ body:has(#note-content) #note-content .note-summary{
+    margin:5mm 0 0!important;padding:2.5mm 3mm!important;border:1px solid #b8cdd6!important;
+    background:#f6fbfc!important;break-inside:avoid-page!important;
+ }
+ body:has(#note-content) #note-content .focus-mark{background:#fae4ac!important;color:#303743!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+ body:has(#note-content) #note-content .sheet-vocab .note-summary{display:none!important}
+ body:has(#note-content) #note-content .hand-word-num{background:#e2eef1!important;color:#315b66!important}
+ body:has(#note-content) #note-content .note-topic-pill{background:#dceff4!important;color:#31566e!important}
+ body:has(#note-content) #note-content .scribble-heading,
+ body:has(#note-content) #note-content .notebook-title,
+ body:has(#note-content) #note-content .sheet-header{orphans:3;widows:3}
+}
+
+/* v17 correction: use true page-margin running headings; fixed-position banners can land in the wrong corner in Chromium print. */
+@page{
+ @top-left{content:"小步學英文  |  ENGLISH STUDY NOTES";font-family:"Noto Sans CJK TC",sans-serif;font-weight:700;font-size:8pt;color:#315e73}
+ @top-right{content:"文法・單字學習講義";font-family:"Noto Sans CJK TC",sans-serif;font-weight:600;font-size:8pt;color:#576f80}
+}
+@media print{body:has(#note-content) #note-content .print-book-running{display:none!important}}
